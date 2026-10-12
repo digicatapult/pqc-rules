@@ -1,0 +1,32 @@
+rules:
+  - id: pqc.python.ml-kem
+    languages: [python]
+    severity: INFO
+    message: ML-KEM (FIPS 203) key encapsulation via liboqs. Quantum-resistant.
+    metadata:
+      category: security
+      pqc-category: pqc-safe
+      pqc-family: ML-KEM
+      pqc-risk: safe
+      nist-pqc-replacement: "n/a"
+    patterns:
+      - pattern: oqs.KeyEncapsulation($A, ...)
+      - metavariable-regex:
+          metavariable: $A
+          regex: ^['"](ML-KEM-(512|768|1024)|Kyber(512|768|1024))['"]$
+
+  - id: pqc.python.ml-dsa
+    languages: [python]
+    severity: INFO
+    message: ML-DSA / SLH-DSA (FIPS 204 / 205) signature via liboqs. Quantum-resistant.
+    metadata:
+      category: security
+      pqc-category: pqc-safe
+      pqc-family: ML-DSA
+      pqc-risk: safe
+      nist-pqc-replacement: "n/a"
+    patterns:
+      - pattern: oqs.Signature($A, ...)
+      - metavariable-regex:
+          metavariable: $A
+          regex: ^['"](ML-DSA-(44|65|87)|SLH-DSA-[\w-]+|SPHINCS\+-[\w-]+)['"]$

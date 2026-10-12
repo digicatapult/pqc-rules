@@ -1,0 +1,46 @@
+rules:
+  - id: pqc.go.tls-legacy-version
+    languages: [go]
+    severity: ERROR
+    message: |
+      tls.Config accepts TLS 1.0 / 1.1. Deprecated by RFC 8996 and unable to
+      negotiate post-quantum key exchange. Set MinVersion: tls.VersionTLS13.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: TLS-legacy
+      pqc-risk: broken
+      nist-pqc-replacement: "TLS 1.3 with X25519MLKEM768"
+    pattern-either:
+      - pattern: "tls.Config{..., MinVersion: tls.VersionTLS10, ...}"
+      - pattern: "tls.Config{..., MinVersion: tls.VersionTLS11, ...}"
+
+  - id: pqc.go.tls-hybrid-groups
+    languages: [go]
+    severity: INFO
+    message: |
+      tls.Config prefers the hybrid post-quantum group X25519MLKEM768. This is
+      the recommended transition configuration.
+    metadata:
+      category: security
+      pqc-category: pqc-hybrid
+      pqc-family: ML-KEM
+      pqc-risk: hybrid
+      nist-pqc-replacement: "n/a"
+    pattern: "[]tls.CurveID{..., tls.X25519MLKEM768, ...}"
+
+  - id: pqc.go.tls-classical-groups
+    languages: [go]
+    severity: WARNING
+    message: |
+      tls.Config CurvePreferences restricted to classical curves only.
+      Harvest-now-decrypt-later exposure. Add tls.X25519MLKEM768 first.
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: ECC
+      pqc-risk: vulnerable
+      nist-pqc-replacement: "X25519MLKEM768 (hybrid ML-KEM, FIPS 203)"
+    patterns:
+      - pattern: "tls.Config{..., CurvePreferences: $C, ...}"
+      - pattern-not: "tls.Config{..., CurvePreferences: []tls.CurveID{..., tls.X25519MLKEM768, ...}, ...}"

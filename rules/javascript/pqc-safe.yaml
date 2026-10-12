@@ -1,0 +1,41 @@
+rules:
+  - id: pqc.javascript.ml-kem
+    languages: [javascript, typescript]
+    severity: INFO
+    message: ML-KEM (FIPS 203) key encapsulation detected. Quantum-resistant.
+    metadata:
+      category: security
+      pqc-category: pqc-safe
+      pqc-family: ML-KEM
+      pqc-risk: safe
+      nist-pqc-replacement: "n/a"
+    pattern-either:
+      - pattern-regex: \bml_kem(512|768|1024)\.(keygen|encapsulate|decapsulate)\(
+      - patterns:
+          - pattern-either:
+              - pattern: crypto.generateKeyPair($A, ...)
+              - pattern: crypto.generateKeyPairSync($A, ...)
+              - pattern: crypto.encapsulate(...)
+          - metavariable-regex:
+              metavariable: $A
+              regex: ^['"]ml-kem-(512|768|1024)['"]$
+
+  - id: pqc.javascript.ml-dsa
+    languages: [javascript, typescript]
+    severity: INFO
+    message: ML-DSA / SLH-DSA (FIPS 204 / 205) signature detected. Quantum-resistant.
+    metadata:
+      category: security
+      pqc-category: pqc-safe
+      pqc-family: ML-DSA
+      pqc-risk: safe
+      nist-pqc-replacement: "n/a"
+    pattern-either:
+      - pattern-regex: \b(ml_dsa(44|65|87)|slh_dsa_\w+)\.(keygen|sign|verify)\(
+      - patterns:
+          - pattern-either:
+              - pattern: crypto.generateKeyPair($A, ...)
+              - pattern: crypto.generateKeyPairSync($A, ...)
+          - metavariable-regex:
+              metavariable: $A
+              regex: ^['"](ml-dsa-(44|65|87)|slh-dsa-[\w-]+)['"]$

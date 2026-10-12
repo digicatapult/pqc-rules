@@ -1,0 +1,95 @@
+rules:
+  - id: pqc.java.rsa
+    languages: [java]
+    severity: ERROR
+    message: |
+      RSA detected (Java JCA). Broken by Shor's algorithm on a CRQC and
+      subject to harvest-now-decrypt-later attacks. Migrate to ML-KEM
+      (FIPS 203) for KEM or ML-DSA (FIPS 204) for signatures.
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: RSA
+      pqc-risk: vulnerable
+      cwe:
+        - "CWE-326: Inadequate Encryption Strength"
+      nist-pqc-replacement: "ML-KEM (FIPS 203) or ML-DSA (FIPS 204)"
+    pattern-either:
+      - pattern: KeyPairGenerator.getInstance("RSA")
+      - pattern: KeyPairGenerator.getInstance("RSA", ...)
+      - pattern: Signature.getInstance("MD5withRSA")
+      - pattern: Signature.getInstance("SHA1withRSA")
+      - pattern: Signature.getInstance("SHA256withRSA")
+      - pattern: Signature.getInstance("SHA384withRSA")
+      - pattern: Signature.getInstance("SHA512withRSA")
+      - pattern: Signature.getInstance("RSASSA-PSS")
+
+  - id: pqc.java.ec
+    languages: [java]
+    severity: ERROR
+    message: |
+      EC key (ECDSA / ECDH) detected (Java JCA). Broken by Shor's
+      algorithm on a CRQC. Migrate to ML-DSA (FIPS 204) for signatures
+      or ML-KEM (FIPS 203) for key agreement.
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: ECC
+      pqc-risk: vulnerable
+      cwe:
+        - "CWE-326: Inadequate Encryption Strength"
+      nist-pqc-replacement: "ML-DSA (FIPS 204) or ML-KEM (FIPS 203)"
+    pattern-either:
+      - pattern: KeyPairGenerator.getInstance("EC")
+      - pattern: KeyPairGenerator.getInstance("EC", ...)
+      - pattern: KeyPairGenerator.getInstance("ECDSA")
+      - pattern: KeyPairGenerator.getInstance("ECDSA", ...)
+      - pattern: KeyAgreement.getInstance("ECDH")
+      - pattern: KeyAgreement.getInstance("ECDH", ...)
+      - pattern: Signature.getInstance("SHA256withECDSA")
+      - pattern: Signature.getInstance("SHA384withECDSA")
+      - pattern: Signature.getInstance("SHA512withECDSA")
+
+  - id: pqc.java.dsa
+    languages: [java]
+    severity: ERROR
+    message: |
+      DSA detected (Java JCA). Broken by Shor's algorithm; deprecated by
+      NIST. Migrate to ML-DSA (FIPS 204).
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: DSA
+      pqc-risk: vulnerable
+      cwe:
+        - "CWE-326: Inadequate Encryption Strength"
+      nist-pqc-replacement: "ML-DSA (FIPS 204)"
+    pattern-either:
+      - pattern: KeyPairGenerator.getInstance("DSA")
+      - pattern: KeyPairGenerator.getInstance("DSA", ...)
+      - pattern: Signature.getInstance("SHA1withDSA")
+      - pattern: Signature.getInstance("SHA256withDSA")
+
+  - id: pqc.java.dh
+    languages: [java]
+    severity: ERROR
+    message: |
+      Diffie-Hellman detected (Java JCA). Broken by Shor's algorithm on
+      a CRQC. Migrate to ML-KEM (FIPS 203).
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: DH
+      pqc-risk: vulnerable
+      cwe:
+        - "CWE-326: Inadequate Encryption Strength"
+      nist-pqc-replacement: "ML-KEM (FIPS 203)"
+    pattern-either:
+      - pattern: KeyPairGenerator.getInstance("DiffieHellman")
+      - pattern: KeyPairGenerator.getInstance("DiffieHellman", ...)
+      - pattern: KeyPairGenerator.getInstance("DH")
+      - pattern: KeyPairGenerator.getInstance("DH", ...)
+      - pattern: KeyAgreement.getInstance("DH")
+      - pattern: KeyAgreement.getInstance("DH", ...)
+      - pattern: KeyAgreement.getInstance("DiffieHellman")
+      - pattern: KeyAgreement.getInstance("DiffieHellman", ...)

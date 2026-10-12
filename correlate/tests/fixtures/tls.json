@@ -1,0 +1,548 @@
+{
+  "target": "localhost:3443",
+  "host": "localhost",
+  "port": 3443,
+  "ip": "::1",
+  "timestamp": "2026-10-12T13:19:23.107402501Z",
+  "duration": "41.601417ms",
+  "protocols": [
+    {
+      "version": "TLS 1.3",
+      "supported": true,
+      "preferred": true
+    },
+    {
+      "version": "TLS 1.2",
+      "supported": true
+    },
+    {
+      "version": "TLS 1.1",
+      "supported": false
+    },
+    {
+      "version": "TLS 1.0",
+      "supported": false
+    }
+  ],
+  "cipherSuites": [
+    {
+      "id": 49172,
+      "name": "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+      "protocol": "TLS 1.2",
+      "keyExchange": "ECDHE",
+      "authentication": "RSA",
+      "encryption": "AES",
+      "mac": "SHA1",
+      "bits": 256,
+      "quantumSafe": false,
+      "forwardSecrecy": true,
+      "deprecated": false
+    },
+    {
+      "id": 49200,
+      "name": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+      "protocol": "TLS 1.2",
+      "keyExchange": "ECDHE",
+      "authentication": "RSA",
+      "encryption": "AES",
+      "mac": "SHA384",
+      "bits": 256,
+      "quantumSafe": false,
+      "forwardSecrecy": true,
+      "deprecated": false
+    },
+    {
+      "id": 52392,
+      "name": "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
+      "protocol": "TLS 1.2",
+      "keyExchange": "ECDHE",
+      "authentication": "RSA",
+      "encryption": "ChaCha20-Poly1305",
+      "mac": "SHA256",
+      "bits": 256,
+      "quantumSafe": false,
+      "forwardSecrecy": true,
+      "deprecated": false
+    },
+    {
+      "id": 53,
+      "name": "TLS_RSA_WITH_AES_256_CBC_SHA",
+      "protocol": "TLS 1.2",
+      "keyExchange": "RSA",
+      "authentication": "RSA",
+      "encryption": "AES",
+      "mac": "SHA1",
+      "bits": 256,
+      "quantumSafe": false,
+      "forwardSecrecy": false,
+      "deprecated": false
+    },
+    {
+      "id": 157,
+      "name": "TLS_RSA_WITH_AES_256_GCM_SHA384",
+      "protocol": "TLS 1.2",
+      "keyExchange": "RSA",
+      "authentication": "RSA",
+      "encryption": "AES",
+      "mac": "SHA384",
+      "bits": 256,
+      "quantumSafe": false,
+      "forwardSecrecy": false,
+      "deprecated": false
+    },
+    {
+      "id": 4865,
+      "name": "TLS_AES_128_GCM_SHA256",
+      "protocol": "TLS 1.3",
+      "keyExchange": "any",
+      "authentication": "any",
+      "encryption": "AES-GCM",
+      "bits": 128,
+      "quantumSafe": false,
+      "forwardSecrecy": true,
+      "deprecated": false,
+      "negotiated": true
+    },
+    {
+      "id": 49171,
+      "name": "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+      "protocol": "TLS 1.2",
+      "keyExchange": "ECDHE",
+      "authentication": "RSA",
+      "encryption": "AES",
+      "mac": "SHA1",
+      "bits": 128,
+      "quantumSafe": false,
+      "forwardSecrecy": true,
+      "deprecated": false
+    },
+    {
+      "id": 49191,
+      "name": "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+      "protocol": "TLS 1.2",
+      "keyExchange": "ECDHE",
+      "authentication": "RSA",
+      "encryption": "AES",
+      "mac": "SHA256",
+      "bits": 128,
+      "quantumSafe": false,
+      "forwardSecrecy": true,
+      "deprecated": false
+    },
+    {
+      "id": 49199,
+      "name": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+      "protocol": "TLS 1.2",
+      "keyExchange": "ECDHE",
+      "authentication": "RSA",
+      "encryption": "AES",
+      "mac": "SHA256",
+      "bits": 128,
+      "quantumSafe": false,
+      "forwardSecrecy": true,
+      "deprecated": false
+    },
+    {
+      "id": 47,
+      "name": "TLS_RSA_WITH_AES_128_CBC_SHA",
+      "protocol": "TLS 1.2",
+      "keyExchange": "RSA",
+      "authentication": "RSA",
+      "encryption": "AES",
+      "mac": "SHA1",
+      "bits": 128,
+      "quantumSafe": false,
+      "forwardSecrecy": false,
+      "deprecated": false
+    },
+    {
+      "id": 60,
+      "name": "TLS_RSA_WITH_AES_128_CBC_SHA256",
+      "protocol": "TLS 1.2",
+      "keyExchange": "RSA",
+      "authentication": "RSA",
+      "encryption": "AES",
+      "mac": "SHA256",
+      "bits": 128,
+      "quantumSafe": false,
+      "forwardSecrecy": false,
+      "deprecated": false
+    },
+    {
+      "id": 156,
+      "name": "TLS_RSA_WITH_AES_128_GCM_SHA256",
+      "protocol": "TLS 1.2",
+      "keyExchange": "RSA",
+      "authentication": "RSA",
+      "encryption": "AES",
+      "mac": "SHA256",
+      "bits": 128,
+      "quantumSafe": false,
+      "forwardSecrecy": false,
+      "deprecated": false
+    }
+  ],
+  "keyExchanges": [
+    {
+      "name": "X25519MLKEM768",
+      "type": "hybrid",
+      "curve": "X25519",
+      "bits": 256,
+      "quantumSafe": true,
+      "pqcAlgorithm": "ML-KEM-768",
+      "hybridClassical": "X25519",
+      "negotiated": true
+    },
+    {
+      "name": "secp521r1",
+      "type": "classical",
+      "curve": "P-521",
+      "bits": 521,
+      "quantumSafe": false
+    },
+    {
+      "name": "secp384r1",
+      "type": "classical",
+      "curve": "P-384",
+      "bits": 384,
+      "quantumSafe": false
+    },
+    {
+      "name": "X25519",
+      "type": "classical",
+      "curve": "X25519",
+      "bits": 256,
+      "quantumSafe": false
+    },
+    {
+      "name": "secp256r1",
+      "type": "classical",
+      "curve": "P-256",
+      "bits": 256,
+      "quantumSafe": false
+    }
+  ],
+  "certificate": {
+    "subject": "CN=localhost",
+    "issuer": "CN=localhost",
+    "serialNumber": "396537652609785380557744295111860618919437865708",
+    "notBefore": "2026-10-12T13:19:19Z",
+    "notAfter": "2026-10-13T13:19:19Z",
+    "signatureAlgorithm": "SHA256-RSA",
+    "publicKeyAlgorithm": "RSA",
+    "publicKeyBits": 2048,
+    "isCA": true,
+    "isSelfSigned": true,
+    "quantumSafe": false,
+    "daysUntilExpiry": 0,
+    "expired": false,
+    "fingerprints": {
+      "sha256": "d91aff383455db7f5b81038cc5d631033e60867599d26df389786faf03cc2ea5",
+      "sha1": "d4c378909e3f9713f7954f222a7659de575f6be5"
+    },
+    "requestedName": "localhost",
+    "nameMatch": "failed",
+    "nameMismatchReason": "x509: certificate relies on legacy Common Name field, use SANs instead",
+    "chainTrust": "failed",
+    "chainTrustReason": "x509: certificate signed by unknown authority"
+  },
+  "quantumRisk": {
+    "assessed": true,
+    "score": 64,
+    "level": "MEDIUM",
+    "keyExchangeRisk": "LOW - Using hybrid or full PQC key exchange",
+    "certificateRisk": "HIGH - Classical signatures can be forged by quantum computers (future threat)",
+    "hybridPqcReady": true,
+    "fullPqcReady": false,
+    "hndlRisk": "LOW - PQC key exchange protects against HNDL attacks",
+    "timeToAction": "MONITORING - Hybrid key exchange deployed; post-quantum certificates are not yet available from publicly trusted CAs, so track CA readiness and keep crypto-agility in place",
+    "details": [
+      "Key exchange uses hybrid PQC: X25519MLKEM768 (X25519 + ML-KEM-768)",
+      "Certificate uses RSA, vulnerable to Shor's algorithm",
+      "Certificate signature algorithm SHA256-RSA is quantum-vulnerable"
+    ]
+  },
+  "grade": {
+    "letter": "D",
+    "score": 56,
+    "quantumGrade": "Q",
+    "factors": [
+      {
+        "category": "Protocol Support",
+        "score": 25,
+        "maxScore": 25,
+        "details": "Excellent: TLS 1.3 supported, no deprecated protocols"
+      },
+      {
+        "category": "Cipher Strength",
+        "score": 15,
+        "maxScore": 25,
+        "details": "Needs improvement: Some ciphers lack forward secrecy"
+      },
+      {
+        "category": "Certificate",
+        "score": 0,
+        "maxScore": 25,
+        "details": "Critical: Certificate is not valid for localhost"
+      },
+      {
+        "category": "Quantum Readiness",
+        "score": 16,
+        "maxScore": 25,
+        "details": "Medium risk: Partial quantum protection"
+      }
+    ],
+    "dimensionScore": 56,
+    "dimensionPoints": 56,
+    "dimensionMaxPoints": 100,
+    "vulnerabilityPenalty": 0,
+    "vulnerabilitiesAssessed": false
+  },
+  "recommendations": [
+    {
+      "priority": 1,
+      "category": "cipher",
+      "title": "Require Forward Secrecy",
+      "description": "Use only cipher suites with ECDHE or DHE key exchange to ensure forward secrecy. This prevents decryption of past sessions if the private key is compromised.",
+      "impact": "Past communications remain protected even if key is compromised",
+      "effort": "low"
+    },
+    {
+      "priority": 2,
+      "category": "certificate",
+      "title": "Renew Certificate Soon",
+      "description": "Certificate expires in less than 30 days. Plan renewal to avoid service disruption.",
+      "impact": "Prevents service disruption",
+      "effort": "low"
+    },
+    {
+      "priority": 3,
+      "category": "quantum",
+      "title": "Plan for Post-Quantum Certificates",
+      "description": "Current certificate uses quantum-vulnerable signatures. Monitor CA support for ML-DSA (FIPS 204) certificates and plan migration timeline.",
+      "impact": "Future-proofs authentication against quantum attacks",
+      "effort": "high",
+      "references": [
+        "https://csrc.nist.gov/publications/detail/fips/204/final"
+      ]
+    }
+  ],
+  "cnsa2Timeline": {
+    "assessmentDate": "2026-10-12T13:19:23.149005292Z",
+    "scope": "milestone status reports whether this server can negotiate the algorithms a milestone requires. A milestone can be met while the server also still accepts weaker options, so a policy evaluation of the same target year, which requires every accepted protocol and cipher suite to qualify, can report non-compliant against the same deadline. Read the milestones for adoption and the policy evaluation for exclusivity.",
+    "milestones": [
+      {
+        "name": "Preparation Phase",
+        "deadline": "2025-12-31T23:59:59Z",
+        "description": "Begin PQC integration planning",
+        "status": "in-progress",
+        "required": [
+          "Inventory cryptographic assets",
+          "Identify quantum-vulnerable systems",
+          "Begin testing PQC algorithms"
+        ],
+        "current": [
+          "Cryptographic scanning initiated"
+        ]
+      },
+      {
+        "name": "New NSS Systems",
+        "deadline": "2027-01-01T00:00:00Z",
+        "description": "New National Security Systems must use CNSA 2.0 algorithms",
+        "status": "compliant",
+        "required": [
+          "ML-KEM for key establishment",
+          "ML-DSA or SLH-DSA for signatures",
+          "AES-256 for symmetric encryption",
+          "SHA-384 or SHA-512 for hashing"
+        ],
+        "current": [
+          "PQC key exchange: X25519MLKEM768",
+          "AES-256 encryption detected"
+        ]
+      },
+      {
+        "name": "TLS 1.3 Required",
+        "deadline": "2030-01-02T00:00:00Z",
+        "description": "TLS 1.3 with PQC required for all systems",
+        "status": "partial",
+        "required": [
+          "TLS 1.3 mandatory",
+          "Hybrid PQC key exchange required",
+          "RSA/ECDH no longer acceptable"
+        ],
+        "current": [
+          "TLS 1.3 supported"
+        ],
+        "gap": [
+          "Legacy protocol still enabled: TLS 1.2"
+        ]
+      },
+      {
+        "name": "Legacy System Update",
+        "deadline": "2033-01-01T00:00:00Z",
+        "description": "All legacy systems updated to CNSA 2.0",
+        "status": "not-applicable",
+        "required": [
+          "Complete migration of existing systems",
+          "PQC certificates widely deployed"
+        ],
+        "current": [],
+        "gap": [
+          "PQC certificates not yet available"
+        ]
+      },
+      {
+        "name": "Full PQC Transition",
+        "deadline": "2035-01-01T00:00:00Z",
+        "description": "Transition to pure PQC complete",
+        "status": "not-applicable",
+        "required": [
+          "Pure PQC (no hybrid required)",
+          "Classical algorithms fully retired"
+        ],
+        "current": [],
+        "gap": [
+          "PQC certificates not yet available"
+        ]
+      }
+    ],
+    "timelineScore": 84,
+    "currentPhase": "New NSS Systems",
+    "daysToNextDeadline": 80,
+    "nextAction": "Legacy protocol still enabled: TLS 1.2",
+    "findings": [
+      {
+        "category": "key-exchange",
+        "algorithm": "X25519MLKEM768",
+        "status": "approved"
+      },
+      {
+        "category": "key-exchange",
+        "algorithm": "secp521r1",
+        "status": "deprecated",
+        "replacement": "Hybrid PQC (X25519MLKEM768)",
+        "deadline": "2030"
+      },
+      {
+        "category": "key-exchange",
+        "algorithm": "secp384r1",
+        "status": "deprecated",
+        "replacement": "Hybrid PQC (X25519MLKEM768)",
+        "deadline": "2030"
+      },
+      {
+        "category": "key-exchange",
+        "algorithm": "X25519",
+        "status": "transitional",
+        "replacement": "X25519MLKEM768 or SecP384r1MLKEM1024",
+        "deadline": "2030"
+      },
+      {
+        "category": "key-exchange",
+        "algorithm": "secp256r1",
+        "status": "deprecated",
+        "replacement": "Hybrid PQC (X25519MLKEM768)",
+        "deadline": "2030"
+      },
+      {
+        "category": "signature",
+        "algorithm": "SHA256-RSA",
+        "status": "transitional",
+        "replacement": "ML-DSA-65 or ML-DSA-87",
+        "deadline": "2030"
+      },
+      {
+        "category": "signature-key",
+        "algorithm": "RSA",
+        "status": "deprecated",
+        "replacement": "ML-DSA certificates (when available)",
+        "deadline": "Immediately"
+      },
+      {
+        "category": "symmetric",
+        "algorithm": "AES",
+        "status": "approved"
+      },
+      {
+        "category": "symmetric",
+        "algorithm": "AES",
+        "status": "approved"
+      },
+      {
+        "category": "symmetric",
+        "algorithm": "ChaCha20-Poly1305",
+        "status": "approved"
+      },
+      {
+        "category": "symmetric",
+        "algorithm": "AES",
+        "status": "approved"
+      },
+      {
+        "category": "symmetric",
+        "algorithm": "AES",
+        "status": "approved"
+      },
+      {
+        "category": "symmetric",
+        "algorithm": "AES-GCM",
+        "status": "transitional",
+        "replacement": "AES-256",
+        "deadline": "2030"
+      },
+      {
+        "category": "symmetric",
+        "algorithm": "AES",
+        "status": "transitional",
+        "replacement": "AES-256",
+        "deadline": "2030"
+      },
+      {
+        "category": "symmetric",
+        "algorithm": "AES",
+        "status": "transitional",
+        "replacement": "AES-256",
+        "deadline": "2030"
+      },
+      {
+        "category": "symmetric",
+        "algorithm": "AES",
+        "status": "transitional",
+        "replacement": "AES-256",
+        "deadline": "2030"
+      },
+      {
+        "category": "symmetric",
+        "algorithm": "AES",
+        "status": "transitional",
+        "replacement": "AES-256",
+        "deadline": "2030"
+      },
+      {
+        "category": "symmetric",
+        "algorithm": "AES",
+        "status": "transitional",
+        "replacement": "AES-256",
+        "deadline": "2030"
+      },
+      {
+        "category": "symmetric",
+        "algorithm": "AES",
+        "status": "transitional",
+        "replacement": "AES-256",
+        "deadline": "2030"
+      }
+    ]
+  },
+  "scanWarnings": [
+    "key exchange groups not probed because this build of the scanner cannot offer them: SecP256r1MLKEM768, SecP384r1MLKEM1024",
+    "protocol support is probed for TLS 1.0 through TLS 1.3 only. Go's TLS stack cannot offer SSL 2.0 or SSL 3.0, so this scan says nothing either way about them, and a minimum-version rule is evaluated against the TLS versions above. Confirm SSL 2.0 and SSL 3.0 are disabled with a scanner built with legacy protocol support, such as nmap's ssl-enum-ciphers script",
+    "cipher suite enumeration is limited to the suites this scanner's TLS stack can offer. TLS 1.3 suites cannot be probed individually at all, since Go always offers all three and ignores per-suite configuration, so only the negotiated TLS 1.3 suite is reported. Some TLS 1.2 suites Go does not implement, such as the CBC-SHA256 and CBC-SHA384 families, cannot be probed either, so a server may accept suites that do not appear here.",
+    "the suite marked negotiated is the one this scanner's own client preference selected, not the server's preferred suite, which this scanner cannot observe. A server offering both usually prefers AES-256 to a client that offers AES-256 first",
+    "the certificate chain is verified against the trust store of the machine running this scan, so a certificate issued by an internal CA is reported untrusted unless that CA is installed here",
+    "revocation is not checked. This scanner does not fetch CRLs or query OCSP, so a chain reported as trusted may still have been revoked. Check revocation separately, for example with 'openssl ocsp' or your CA's status endpoint",
+    "vulnerability checks were skipped, so the grade carries no vulnerability penalties"
+  ],
+  "scannerVersion": "0.4.1"
+}

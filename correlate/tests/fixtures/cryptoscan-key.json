@@ -1,0 +1,15 @@
+{
+  "findings": [
+    {
+      "id": "KEY-001-1-1",
+      "type": "RSA Private Key",
+      "category": "Key Material",
+      "algorithm": "RSA",
+      "file": "config/dev-server.key",
+      "line": 1,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "HIGH",
+      "description": "RSA private key committed to the repository."
+    }
+  ]
+}

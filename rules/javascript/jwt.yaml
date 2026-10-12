@@ -1,0 +1,45 @@
+rules:
+  - id: pqc.javascript.jwt-rsa
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: |
+      JWT signed or verified with an RSA algorithm (RS*/PS*). RSA signatures
+      are broken by Shor's algorithm on a CRQC. Short-lived tokens carry less
+      risk than long-lived ones; plan migration to ML-DSA (FIPS 204) once
+      PQ JOSE algorithms are standardised.
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: RSA
+      pqc-risk: vulnerable
+      nist-pqc-replacement: "ML-DSA (FIPS 204)"
+    patterns:
+      - pattern-either:
+          - pattern: '$JWT.sign($P, $K, {..., algorithm: $ALG, ...}, ...)'
+          - pattern: '$H.setProtectedHeader({..., alg: $ALG, ...})'
+          - pattern: jose.generateKeyPair($ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: ^['"](RS|PS)(256|384|512)['"]$
+
+  - id: pqc.javascript.jwt-ecc
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: |
+      JWT signed with an elliptic-curve algorithm (ES*/EdDSA). EC signatures
+      are broken by Shor's algorithm on a CRQC. Plan migration to ML-DSA
+      (FIPS 204) once PQ JOSE algorithms are standardised.
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: ECC
+      pqc-risk: vulnerable
+      nist-pqc-replacement: "ML-DSA (FIPS 204)"
+    patterns:
+      - pattern-either:
+          - pattern: '$JWT.sign($P, $K, {..., algorithm: $ALG, ...}, ...)'
+          - pattern: '$H.setProtectedHeader({..., alg: $ALG, ...})'
+          - pattern: jose.generateKeyPair($ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: ^['"](ES(256|384|512|256K)|EdDSA|Ed25519)['"]$

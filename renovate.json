@@ -1,0 +1,7 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["local>digicatapult/renovate-config"],
+  "pip_requirements": {
+    "managerFilePatterns": ["/(^|/)requirements-dev\\.txt$/"]
+  }
+}
