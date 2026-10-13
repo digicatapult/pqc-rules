@@ -76,10 +76,11 @@ def test_single_source_outside_window_is_kept_but_not_reported(tmp_path: Path) -
     assert jwt["reported"] is False
 
 
-def test_wider_window_merges_nearby_findings(tmp_path: Path) -> None:
+def test_wider_window_never_merges_distinct_semgrep_findings(tmp_path: Path) -> None:
     _, data, _ = run(tmp_path, *all_sources("--window", "4"))
-    merged = find(data["groups"], "app.js", 8, "RSA")
-    assert {f["line"] for f in merged["findings"]} >= {4, 8}
+    jwt = find(data["groups"], "app.js", 8, "RSA")
+    assert {f["line"] for f in jwt["findings"]} == {8}
+    assert find(data["groups"], "app.js", 4, "RSA")["evidence"] == CORROBORATED
 
 
 def test_partial_risk_is_never_reported(tmp_path: Path) -> None:
@@ -150,6 +151,47 @@ def test_disagreeing_sources_are_conflicting_and_not_reported() -> None:
     (group,) = correlate(findings, window=3, allowlist=())
     assert group.evidence == CONFLICTING
     assert reportable(group) is False
+
+
+def _semgrep(line: int, family: str, rule: str) -> Finding:
+    return Finding("semgrep", "app.js", line, family, "vulnerable", f"pqc.javascript.{rule}", rule)
+
+
+def _cryptoscan(line: int, family: str) -> Finding:
+    return Finding("cryptoscan", "app.js", line, family, "vulnerable", f"{family}-001", family)
+
+
+def test_neighbouring_semgrep_findings_stay_separate() -> None:
+    # RSA key (8), EC key (9), ECDH (10), RS256 JWT (11), ES256 JWT (12): five distinct calls.
+    findings = [
+        _semgrep(8, "RSA", "rsa"), _cryptoscan(8, "RSA"),
+        _semgrep(9, "ECC", "ec"), _cryptoscan(9, "ECC"),
+        _semgrep(10, "ECC", "ec"), _cryptoscan(10, "ECC"),
+        _semgrep(11, "RSA", "jwt-rsa"),
+        _semgrep(12, "ECC", "jwt-ecc"),
+    ]
+    groups = correlate(findings, window=3, allowlist=("semgrep:pqc.*.jwt-*",))
+    by_line = {g.anchor.line: g for g in groups}
+    assert sorted(by_line) == [8, 9, 10, 11, 12]
+    assert all(by_line[line].evidence == CORROBORATED for line in (8, 9, 10))
+    assert all(by_line[line].evidence == SINGLE_SOURCE for line in (11, 12))
+    assert all(reportable(g) for g in groups)
+
+
+def test_pattern_finding_joins_nearest_anchor_only() -> None:
+    findings = [_semgrep(10, "RSA", "rsa"), _semgrep(14, "RSA", "jwt-rsa"), _cryptoscan(13, "RSA")]
+    groups = correlate(findings, window=3, allowlist=())
+    jwt = next(g for g in groups if g.anchor.rule_id == "pqc.javascript.jwt-rsa")
+    key = next(g for g in groups if g.anchor.rule_id == "pqc.javascript.rsa")
+    assert jwt.sources == ["cryptoscan", "semgrep"]
+    assert key.sources == ["semgrep"]
+
+
+def test_pattern_findings_without_anchor_still_cluster() -> None:
+    findings = [_cryptoscan(5, "MD5"), _cryptoscan(7, "MD5"), _semgrep(20, "MD5", "md5")]
+    groups = correlate(findings, window=3, allowlist=())
+    assert sorted(len(g.findings) for g in groups) == [1, 2]
+    assert all(g.evidence == SINGLE_SOURCE for g in groups)
 
 
 @pytest.mark.parametrize(

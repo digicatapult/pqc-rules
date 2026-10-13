@@ -25,6 +25,11 @@ DEFAULT_ALLOWLIST: tuple[str, ...] = (
 )
 
 
+# Sources whose findings are rule-precise: each one is a distinct finding and is never
+# merged with another finding from the same source, however close it is.
+ANCHOR_SOURCES: frozenset[str] = frozenset({"semgrep"})
+
+
 @dataclass
 class Group:
     """Findings that refer to the same crypto at (roughly) the same place."""
@@ -39,7 +44,13 @@ class Group:
 
     @property
     def anchor(self) -> Finding:
-        """The finding on the line most sources agree on (earliest line breaks ties)."""
+        """The anchor-source finding if there is one, else the line most sources agree on.
+
+        Ties between lines resolve to the earliest line.
+        """
+        anchors = [f for f in self.findings if f.source in ANCHOR_SOURCES]
+        if anchors:
+            return min(anchors, key=lambda f: (f.line, f.rule_id))
         votes: dict[int, set[str]] = defaultdict(set)
         for finding in self.findings:
             votes[finding.line].add(finding.source)
@@ -56,8 +67,32 @@ class Group:
         return COARSE_RISK[self.risk]
 
 
+def _attach_to_anchors(findings: list[Finding], window: int) -> list[list[Finding]]:
+    """Group one (file, family) bucket around its anchor findings.
+
+    Every anchor finding starts its own group, so distinct calls on neighbouring
+    lines (an RSA key and an RS256 JWT, say) stay separate. Every other finding
+    joins the nearest anchor within the window; an exact line match always wins,
+    and equally distant anchors resolve to the earlier line. Findings with no
+    anchor in range are clustered among themselves, as before.
+    """
+    anchors = sorted((f for f in findings if f.source in ANCHOR_SOURCES), key=lambda f: (f.line, f.rule_id))
+    groups: list[list[Finding]] = [[anchor] for anchor in anchors]
+    unattached: list[Finding] = []
+    for finding in findings:
+        if finding.source in ANCHOR_SOURCES:
+            continue
+        distances = [(abs(finding.line - anchor.line), anchor.line, index) for index, anchor in enumerate(anchors)]
+        in_range = [d for d in distances if d[0] <= window]
+        if in_range:
+            groups[min(in_range)[2]].append(finding)
+        else:
+            unattached.append(finding)
+    return groups + _cluster(unattached, window)
+
+
 def _cluster(findings: list[Finding], window: int) -> list[list[Finding]]:
-    """Single-link clustering on line distance within one (file, family) bucket."""
+    """Single-link clustering on line distance, for buckets with no anchor findings."""
     ordered = sorted(findings, key=lambda f: f.line)
     clusters: list[list[Finding]] = []
     for finding in ordered:
@@ -93,7 +128,7 @@ def correlate(findings: list[Finding], window: int, allowlist: tuple[str, ...]) 
         else:
             buckets[(finding.file, match_key(finding.family))].append(finding)
     for bucket in buckets.values():
-        groups.extend(Group(cluster) for cluster in _cluster(bucket, window))
+        groups.extend(Group(cluster) for cluster in _attach_to_anchors(bucket, window))
 
     for group in groups:
         if group.evidence != RUNTIME:
