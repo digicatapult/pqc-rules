@@ -9,16 +9,27 @@ rules:
       pqc-family: ML-KEM
       pqc-risk: safe
       nist-pqc-replacement: "n/a"
+    # Node's crypto.encapsulate()/decapsulate() are not matched: they use whichever
+    # KEM the key's type implies (RSA, EC, X25519/X448 or ML-KEM). The ML-KEM key
+    # itself is matched where it is generated.
     pattern-either:
-      - pattern-regex: \bml_kem(512|768|1024)\.(keygen|encapsulate|decapsulate)\(
       - patterns:
           - pattern-either:
-              - pattern: crypto.generateKeyPair($A, ...)
-              - pattern: crypto.generateKeyPairSync($A, ...)
-              - pattern: crypto.encapsulate(...)
+              - pattern: $M.keygen(...)
+              - pattern: $M.encapsulate(...)
+              - pattern: $M.decapsulate(...)
           - metavariable-regex:
-              metavariable: $A
-              regex: ^['"]ml-kem-(512|768|1024)['"]$
+              metavariable: $M
+              regex: ^ml_kem(512|768|1024)$
+      - patterns:
+          - pattern-either:
+              - pattern: $C.generateKeyPair($ALG, ...)
+              - pattern: generateKeyPair($ALG, ...)
+              - pattern: $C.generateKeyPairSync($ALG, ...)
+              - pattern: generateKeyPairSync($ALG, ...)
+          - metavariable-regex:
+              metavariable: $ALG
+              regex: (?i)^['"`]ml-kem-(512|768|1024)['"`]$
 
   - id: pqc.javascript.ml-dsa
     languages: [javascript, typescript]
@@ -31,11 +42,20 @@ rules:
       pqc-risk: safe
       nist-pqc-replacement: "n/a"
     pattern-either:
-      - pattern-regex: \b(ml_dsa(44|65|87)|slh_dsa_\w+)\.(keygen|sign|verify)\(
       - patterns:
           - pattern-either:
-              - pattern: crypto.generateKeyPair($A, ...)
-              - pattern: crypto.generateKeyPairSync($A, ...)
+              - pattern: $M.keygen(...)
+              - pattern: $M.sign(...)
+              - pattern: $M.verify(...)
           - metavariable-regex:
-              metavariable: $A
-              regex: ^['"](ml-dsa-(44|65|87)|slh-dsa-[\w-]+)['"]$
+              metavariable: $M
+              regex: ^(ml_dsa(44|65|87)|slh_dsa_\w+)$
+      - patterns:
+          - pattern-either:
+              - pattern: $C.generateKeyPair($ALG, ...)
+              - pattern: generateKeyPair($ALG, ...)
+              - pattern: $C.generateKeyPairSync($ALG, ...)
+              - pattern: generateKeyPairSync($ALG, ...)
+          - metavariable-regex:
+              metavariable: $ALG
+              regex: (?i)^['"`](ml-dsa-(44|65|87)|slh-dsa-[\w-]+)['"`]$

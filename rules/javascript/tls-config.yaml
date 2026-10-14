@@ -37,7 +37,8 @@ rules:
       - pattern: "{..., ecdhCurve: $G, ...}"
       - metavariable-regex:
           metavariable: $G
-          regex: ^['"](?!.*MLKEM)[^'"]+['"]$
+          # "auto" (Node's default) lets OpenSSL choose, which includes hybrid groups on OpenSSL 3.5+.
+          regex: (?i)^['"](?!auto['"])(?!.*mlkem)[^'"]+['"]$
 
   - id: pqc.javascript.tls-hybrid-groups
     languages: [javascript, typescript]
@@ -55,4 +56,4 @@ rules:
       - pattern: "{..., ecdhCurve: $G, ...}"
       - metavariable-regex:
           metavariable: $G
-          regex: .*MLKEM
+          regex: (?i).*mlkem

@@ -10,7 +10,7 @@ from typing import Any
 
 from . import __version__
 from .families import RISK_ORDER
-from .correlate import CONFLICTING, CORROBORATED, RUNTIME, SINGLE_SOURCE, Group, reportable
+from .correlate import CONFLICTING, CORROBORATED, SINGLE_SOURCE, Group, reportable
 
 TOOL_NAME = "pqc-correlate"
 INFORMATION_URI = "https://github.com/digicatapult/pqc-rules"
@@ -18,6 +18,7 @@ INFORMATION_URI = "https://github.com/digicatapult/pqc-rules"
 _PRIMITIVE = {
     "RSA": "pke", "ECC": "signature", "DSA": "signature", "DH": "key-agree",
     "ML-KEM": "kem", "ML-DSA": "signature", "SLH-DSA": "signature",
+    "FN-DSA": "signature", "XMSS": "signature", "LMS": "signature",
     "AES": "block-cipher", "DES": "block-cipher", "3DES": "block-cipher",
     "RC4": "stream-cipher", "ChaCha20": "stream-cipher",
     "MD5": "hash", "SHA-1": "hash", "SHA-2": "hash", "SHA-3": "hash",
@@ -43,12 +44,25 @@ def _group_dict(group: Group) -> dict[str, Any]:
     }
 
 
-def to_json(groups: list[Group], sources_run: list[str]) -> dict[str, Any]:
+def to_json(groups: list[Group], sources_run: list[str], unmapped: dict[str, Counter[str]]) -> dict[str, Any]:
+    """Every group, plus per-source counts of findings that mapped to no family (by rule id)."""
     return {
         "tool": {"name": TOOL_NAME, "version": __version__},
         "sources_run": sources_run,
+        "unmapped": {source: dict(sorted(counts.items())) for source, counts in unmapped.items()},
         "groups": [_group_dict(g) for g in groups],
     }
+
+
+def _crypto_properties(family: str) -> dict[str, Any]:
+    if family == "TLS-legacy":
+        return {"assetType": "protocol"}
+    if family == "private-key":
+        return {"assetType": "related-crypto-material", "relatedCryptoMaterialProperties": {"type": "private-key"}}
+    properties: dict[str, Any] = {"assetType": "algorithm"}
+    if family in _PRIMITIVE:
+        properties["algorithmProperties"] = {"primitive": _PRIMITIVE[family]}
+    return properties
 
 
 def to_cbom(groups: list[Group]) -> dict[str, Any]:
@@ -59,26 +73,18 @@ def to_cbom(groups: list[Group]) -> dict[str, Any]:
     components = []
     for family in sorted(by_family):
         members = by_family[family]
-        occurrences = [
-            {"location": g.anchor.file, "line": g.anchor.line}
-            for g in members if not g.anchor.is_runtime
-        ]
+        occurrences = [{"location": g.anchor.file, "line": g.anchor.line} for g in members]
         component: dict[str, Any] = {
             "type": "cryptographic-asset",
             "bom-ref": f"crypto/algorithm/{family}",
             "name": family,
-            "cryptoProperties": {
-                "assetType": "protocol" if family == "TLS-legacy" else "algorithm",
-            },
+            "cryptoProperties": _crypto_properties(family),
             "properties": [
                 {"name": "pqc:risk", "value": min((g.risk for g in members), key=RISK_ORDER.index)},
                 {"name": "pqc:evidence", "value": ",".join(sorted({g.evidence for g in members}))},
             ],
         }
-        if family in _PRIMITIVE:
-            component["cryptoProperties"]["algorithmProperties"] = {"primitive": _PRIMITIVE[family]}
-        if occurrences:
-            component["evidence"] = {"occurrences": occurrences}
+        component["evidence"] = {"occurrences": occurrences}
         components.append(component)
     return {
         "bomFormat": "CycloneDX",
@@ -99,7 +105,7 @@ def _fingerprint(group: Group) -> str:
     return hashlib.sha256(key.encode()).hexdigest()
 
 
-def to_sarif(groups: list[Group], runtime_anchor: str) -> dict[str, Any]:
+def to_sarif(groups: list[Group]) -> dict[str, Any]:
     """SARIF 2.1.0 containing only reportable groups."""
     rules: dict[str, dict[str, Any]] = {}
     results = []
@@ -114,15 +120,13 @@ def to_sarif(groups: list[Group], runtime_anchor: str) -> dict[str, Any]:
         })
         level = "warning" if group.evidence == CORROBORATED else "note"
         detail = "; ".join(sorted({f"{f.source}: {f.message.splitlines()[0]}" for f in group.findings}))
-        file = runtime_anchor if anchor.is_runtime else anchor.file
-        line = 1 if anchor.is_runtime else max(anchor.line, 1)
         results.append({
             "ruleId": rule_id,
             "level": level,
             "message": {"text": f"[{group.evidence}; risk={group.risk}; sources={','.join(group.sources)}] {detail}"},
             "locations": [{"physicalLocation": {
-                "artifactLocation": {"uri": file},
-                "region": {"startLine": line},
+                "artifactLocation": {"uri": anchor.file},
+                "region": {"startLine": max(anchor.line, 1)},
             }}],
             "partialFingerprints": {"pqcGroup/v1": _fingerprint(group)},
             "properties": {"evidence": group.evidence, "risk": group.risk,
@@ -139,7 +143,9 @@ def to_sarif(groups: list[Group], runtime_anchor: str) -> dict[str, Any]:
     }
 
 
-def to_summary(groups: list[Group], sources_run: list[str], sources_expected: list[str]) -> str:
+def to_summary(
+    groups: list[Group], sources_run: list[str], sources_expected: list[str], unmapped: dict[str, Counter[str]]
+) -> str:
     counts = Counter(g.evidence for g in groups)
     reported = sum(1 for g in groups if reportable(g))
     missing = sorted(set(sources_expected) - set(sources_run))
@@ -150,11 +156,18 @@ def to_summary(groups: list[Group], sources_run: list[str], sources_expected: li
     ]
     if missing:
         lines.append(f"Sources expected but not run: {', '.join(missing)}")
+    dropped = {source: sum(counts.values()) for source, counts in unmapped.items() if counts}
+    if dropped:
+        lines.append(
+            "Findings with no known algorithm family, not correlated: "
+            + ", ".join(f"{source} {count}" for source, count in sorted(dropped.items()))
+            + " (see `unmapped` in `pqc-all.json`)"
+        )
     lines += [
         "",
         "| Evidence | Groups |",
         "| --- | --- |",
-        *(f"| {level} | {counts.get(level, 0)} |" for level in (CORROBORATED, SINGLE_SOURCE, CONFLICTING, RUNTIME)),
+        *(f"| {level} | {counts.get(level, 0)} |" for level in (CORROBORATED, SINGLE_SOURCE, CONFLICTING)),
         "",
         f"**Reported to code scanning:** {reported} (quantum-vulnerable/broken, corroborated or allowlisted).",
         "All other findings are in the `pqc-all.json` artefact.",
@@ -163,6 +176,5 @@ def to_summary(groups: list[Group], sources_run: list[str], sources_expected: li
     if at_risk:
         lines += ["", "| Location | Family | Risk | Evidence | Sources |", "| --- | --- | --- | --- | --- |"]
         for g in at_risk:
-            where = g.anchor.extra.get("target", "runtime") if g.anchor.is_runtime else f"`{g.anchor.file}:{g.anchor.line}`"
-            lines.append(f"| {where} | {g.anchor.family} | {g.risk} | {g.evidence} | {', '.join(g.sources)} |")
+            lines.append(f"| `{g.anchor.file}:{g.anchor.line}` | {g.anchor.family} | {g.risk} | {g.evidence} | {', '.join(g.sources)} |")
     return "\n".join(lines) + "\n"

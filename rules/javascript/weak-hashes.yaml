@@ -13,15 +13,13 @@ rules:
       cwe:
         - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
       nist-pqc-replacement: "SHA-256 / SHA-3-256"
-    pattern-either:
-      - pattern: crypto.createHash("md5", ...)
-      - pattern: crypto.createHash('md5', ...)
-      - pattern: crypto.createHash("MD5", ...)
-      - pattern: crypto.createHash('MD5', ...)
-      - pattern: crypto.createHash("md5")
-      - pattern: crypto.createHash('md5')
-      - pattern: crypto.createHash("MD5")
-      - pattern: crypto.createHash('MD5')
+    patterns:
+      - pattern-either:
+          - pattern: $C.createHash($ALG, ...)
+          - pattern: createHash($ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: (?i)^['"`](md5)['"`]$
 
   - id: pqc.javascript.sha1
     languages: [javascript, typescript]
@@ -37,12 +35,10 @@ rules:
       cwe:
         - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
       nist-pqc-replacement: "SHA-256 / SHA-3-256"
-    pattern-either:
-      - pattern: crypto.createHash("sha1", ...)
-      - pattern: crypto.createHash('sha1', ...)
-      - pattern: crypto.createHash("SHA1", ...)
-      - pattern: crypto.createHash('SHA1', ...)
-      - pattern: crypto.createHash("sha1")
-      - pattern: crypto.createHash('sha1')
-      - pattern: crypto.createHash("SHA1")
-      - pattern: crypto.createHash('SHA1')
+    patterns:
+      - pattern-either:
+          - pattern: $C.createHash($ALG, ...)
+          - pattern: createHash($ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: (?i)^['"`](sha1)['"`]$

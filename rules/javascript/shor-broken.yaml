@@ -15,11 +15,15 @@ rules:
       cwe:
         - "CWE-326: Inadequate Encryption Strength"
       nist-pqc-replacement: "ML-KEM (FIPS 203) or ML-DSA (FIPS 204)"
-    pattern-either:
-      - pattern: crypto.generateKeyPair("rsa", ...)
-      - pattern: crypto.generateKeyPair('rsa', ...)
-      - pattern: crypto.generateKeyPairSync("rsa", ...)
-      - pattern: crypto.generateKeyPairSync('rsa', ...)
+    patterns:
+      - pattern-either:
+          - pattern: $C.generateKeyPair($ALG, ...)
+          - pattern: generateKeyPair($ALG, ...)
+          - pattern: $C.generateKeyPairSync($ALG, ...)
+          - pattern: generateKeyPairSync($ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: (?i)^['"`](rsa|rsa-pss)['"`]$
 
   - id: pqc.javascript.ec
     languages: [javascript, typescript]
@@ -37,11 +41,17 @@ rules:
         - "CWE-326: Inadequate Encryption Strength"
       nist-pqc-replacement: "ML-DSA (FIPS 204), SLH-DSA (FIPS 205), or ML-KEM (FIPS 203)"
     pattern-either:
-      - pattern: crypto.generateKeyPair("ec", ...)
-      - pattern: crypto.generateKeyPair('ec', ...)
-      - pattern: crypto.generateKeyPairSync("ec", ...)
-      - pattern: crypto.generateKeyPairSync('ec', ...)
-      - pattern: crypto.createECDH(...)
+      - patterns:
+          - pattern-either:
+              - pattern: $C.generateKeyPair($ALG, ...)
+              - pattern: generateKeyPair($ALG, ...)
+              - pattern: $C.generateKeyPairSync($ALG, ...)
+              - pattern: generateKeyPairSync($ALG, ...)
+          - metavariable-regex:
+              metavariable: $ALG
+              regex: (?i)^['"`]ec['"`]$
+      - pattern: $C.createECDH(...)
+      - pattern: createECDH(...)
 
   - id: pqc.javascript.dsa
     languages: [javascript, typescript]
@@ -57,11 +67,15 @@ rules:
       cwe:
         - "CWE-326: Inadequate Encryption Strength"
       nist-pqc-replacement: "ML-DSA (FIPS 204)"
-    pattern-either:
-      - pattern: crypto.generateKeyPair("dsa", ...)
-      - pattern: crypto.generateKeyPair('dsa', ...)
-      - pattern: crypto.generateKeyPairSync("dsa", ...)
-      - pattern: crypto.generateKeyPairSync('dsa', ...)
+    patterns:
+      - pattern-either:
+          - pattern: $C.generateKeyPair($ALG, ...)
+          - pattern: generateKeyPair($ALG, ...)
+          - pattern: $C.generateKeyPairSync($ALG, ...)
+          - pattern: generateKeyPairSync($ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: (?i)^['"`](dsa)['"`]$
 
   - id: pqc.javascript.dh
     languages: [javascript, typescript]
@@ -78,8 +92,12 @@ rules:
         - "CWE-326: Inadequate Encryption Strength"
       nist-pqc-replacement: "ML-KEM (FIPS 203)"
     pattern-either:
-      - pattern: crypto.createDiffieHellman(...)
-      - pattern: crypto.getDiffieHellman(...)
+      - pattern: $C.createDiffieHellman(...)
+      - pattern: createDiffieHellman(...)
+      - pattern: $C.getDiffieHellman(...)
+      - pattern: getDiffieHellman(...)
+      - pattern: $C.createDiffieHellmanGroup(...)
+      - pattern: createDiffieHellmanGroup(...)
 
   - id: pqc.javascript.x25519
     languages: [javascript, typescript]
@@ -96,11 +114,15 @@ rules:
       cwe:
         - "CWE-326: Inadequate Encryption Strength"
       nist-pqc-replacement: "Hybrid X25519 + ML-KEM (FIPS 203)"
-    pattern-either:
-      - pattern: crypto.generateKeyPair("x25519", ...)
-      - pattern: crypto.generateKeyPair('x25519', ...)
-      - pattern: crypto.generateKeyPairSync("x25519", ...)
-      - pattern: crypto.generateKeyPairSync('x25519', ...)
+    patterns:
+      - pattern-either:
+          - pattern: $C.generateKeyPair($ALG, ...)
+          - pattern: generateKeyPair($ALG, ...)
+          - pattern: $C.generateKeyPairSync($ALG, ...)
+          - pattern: generateKeyPairSync($ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: (?i)^['"`](x25519)['"`]$
 
   - id: pqc.javascript.ed25519
     languages: [javascript, typescript]
@@ -116,8 +138,12 @@ rules:
       cwe:
         - "CWE-326: Inadequate Encryption Strength"
       nist-pqc-replacement: "ML-DSA (FIPS 204) or hybrid Ed25519 + ML-DSA"
-    pattern-either:
-      - pattern: crypto.generateKeyPair("ed25519", ...)
-      - pattern: crypto.generateKeyPair('ed25519', ...)
-      - pattern: crypto.generateKeyPairSync("ed25519", ...)
-      - pattern: crypto.generateKeyPairSync('ed25519', ...)
+    patterns:
+      - pattern-either:
+          - pattern: $C.generateKeyPair($ALG, ...)
+          - pattern: generateKeyPair($ALG, ...)
+          - pattern: $C.generateKeyPairSync($ALG, ...)
+          - pattern: generateKeyPairSync($ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: (?i)^['"`](ed25519)['"`]$

@@ -12,17 +12,10 @@ from .normalise import Finding
 CORROBORATED = "corroborated"
 SINGLE_SOURCE = "single-source"
 CONFLICTING = "conflicting"
-RUNTIME = "runtime"
 
-# Single-source findings that are facts rather than pattern guesses.
-# cryptoscan KEY-001..006 match PEM private-key headers committed to the repo;
-# the TLS entries are direct observations of a running localhost service.
-DEFAULT_ALLOWLIST: tuple[str, ...] = (
-    "cryptoscan:KEY-00*",
-    "tls-analyzer:tls.certificate-key",
-    "tls-analyzer:tls.negotiated-key-exchange",
-    "tls-analyzer:tls.legacy-protocol",
-)
+# Single-source findings that are facts rather than pattern guesses:
+# cryptoscan KEY-001..006 match PEM private-key headers committed to the repo.
+DEFAULT_ALLOWLIST: tuple[str, ...] = ("cryptoscan:KEY-00*",)
 
 
 # Sources whose findings are rule-precise: each one is a distinct finding and is never
@@ -92,11 +85,15 @@ def _attach_to_anchors(findings: list[Finding], window: int) -> list[list[Findin
 
 
 def _cluster(findings: list[Finding], window: int) -> list[list[Finding]]:
-    """Single-link clustering on line distance, for buckets with no anchor findings."""
+    """Cluster findings for buckets with no anchor findings.
+
+    A cluster spans at most `window` lines from its first finding, so a run of
+    findings a few lines apart cannot chain into one group of unbounded length.
+    """
     ordered = sorted(findings, key=lambda f: f.line)
     clusters: list[list[Finding]] = []
     for finding in ordered:
-        if clusters and finding.line - clusters[-1][-1].line <= window:
+        if clusters and finding.line - clusters[-1][0].line <= window:
             clusters[-1].append(finding)
         else:
             clusters.append([finding])
@@ -123,19 +120,15 @@ def correlate(findings: list[Finding], window: int, allowlist: tuple[str, ...]) 
     buckets: dict[tuple[str, str], list[Finding]] = defaultdict(list)
     groups: list[Group] = []
     for finding in findings:
-        if finding.is_runtime:
-            groups.append(Group([finding], evidence=RUNTIME))
-        else:
-            buckets[(finding.file, match_key(finding.family))].append(finding)
+        buckets[(finding.file, match_key(finding.family))].append(finding)
     for bucket in buckets.values():
         groups.extend(Group(cluster) for cluster in _attach_to_anchors(bucket, window))
 
     for group in groups:
-        if group.evidence != RUNTIME:
-            if _is_conflicting(group):
-                group.evidence = CONFLICTING
-            elif len(group.sources) >= 2:
-                group.evidence = CORROBORATED
+        if _is_conflicting(group):
+            group.evidence = CONFLICTING
+        elif len(group.sources) >= 2:
+            group.evidence = CORROBORATED
         group.allowlisted = _allowlisted(group, allowlist)
     groups.sort(key=lambda g: (g.anchor.file, g.anchor.line, g.anchor.family))
     return groups

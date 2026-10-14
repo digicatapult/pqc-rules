@@ -48,3 +48,18 @@ function safe(): void {
     // ok: pqc.javascript.rsa
     const buf: Buffer = crypto.randomBytes(32);
 }
+
+import { generateKeyPairSync, createECDH } from "node:crypto";
+import * as nc from "node:crypto";
+import nodeCrypto from "node:crypto";
+
+function imported(): void {
+    // ruleid: pqc.javascript.rsa
+    const r1 = generateKeyPairSync("rsa", { modulusLength: 2048 });
+    // ruleid: pqc.javascript.ec
+    const e1 = nc.generateKeyPairSync("ec", { namedCurve: "P-256" });
+    // ruleid: pqc.javascript.ec
+    const e2: nc.ECDH = createECDH("secp256k1");
+    // ruleid: pqc.javascript.dh
+    const d1 = nodeCrypto.createDiffieHellman(2048);
+}

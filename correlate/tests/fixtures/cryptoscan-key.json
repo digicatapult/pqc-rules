@@ -1,15 +1,554 @@
 {
+  "tool": {
+    "name": "CryptoScan",
+    "version": "1.4.0"
+  },
   "findings": [
     {
-      "id": "KEY-001-1-1",
-      "type": "RSA Private Key",
-      "category": "Key Material",
-      "algorithm": "RSA",
-      "file": "config/dev-server.key",
+      "id": "DSA-001-1-0",
+      "type": "DSA Algorithm",
+      "findingType": "algorithm",
+      "category": "Asymmetric Encryption",
+      "algorithm": "DSA",
+      "primitive": "signature",
+      "migrationStatus": "VULNERABLE",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "file": "config/dsa-private-key.key",
       "line": 1,
+      "column": 1,
+      "match": "-----BEGIN DSA",
+      "context": "-----BEGIN DSA PRIVATE KEY-----",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "-----BEGIN DSA PRIVATE KEY-----",
+            "isMatch": true
+          }
+        ],
+        "startLine": 1,
+        "endLine": 1,
+        "matchLine": 1
+      },
+      "severity": 3,
       "quantumRisk": "VULNERABLE",
-      "confidence": "HIGH",
-      "description": "RSA private key committed to the repository."
+      "confidence": "MEDIUM",
+      "purpose": "general",
+      "language": "unknown",
+      "fileType": "key",
+      "description": "DSA (Digital Signature Algorithm) detected. DSA is vulnerable to quantum attacks.",
+      "remediation": "Migrate to ML-DSA (FIPS 204) or SLH-DSA (FIPS 205) for digital signatures.",
+      "impact": "Long-term data confidentiality at risk from quantum computing advances",
+      "effort": "Algorithm replacement - high effort, requires PKI changes",
+      "tags": [
+        "asymmetric",
+        "quantum-vulnerable",
+        "digital-signature",
+        "deprecated"
+      ]
+    },
+    {
+      "id": "KEY-003-1-0",
+      "type": "DSA Private Key",
+      "findingType": "secret",
+      "category": "Secret Detection",
+      "migrationStatus": "CRITICAL",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "file": "config/dsa-private-key.key",
+      "line": 1,
+      "column": 1,
+      "match": "-----BEGIN DSA PRIVATE KEY-----",
+      "context": "-----BEGIN DSA PRIVATE KEY-----",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "-----BEGIN DSA PRIVATE KEY-----",
+            "isMatch": true
+          }
+        ],
+        "startLine": 1,
+        "endLine": 1,
+        "matchLine": 1
+      },
+      "severity": 4,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "general",
+      "language": "unknown",
+      "fileType": "key",
+      "description": "DSA private key found in source code. DSA is deprecated and quantum-vulnerable.",
+      "remediation": "Remove from source. Migrate to ML-DSA for signatures.",
+      "impact": "Critical: Exposed cryptographic secrets can lead to complete system compromise",
+      "effort": "Immediate action required - rotate secrets and remove from code",
+      "tags": [
+        "secret",
+        "key",
+        "quantum-vulnerable",
+        "critical",
+        "deprecated"
+      ]
+    },
+    {
+      "id": "KEY-002-1-0",
+      "type": "EC Private Key Header",
+      "findingType": "secret",
+      "category": "Secret Detection",
+      "migrationStatus": "CRITICAL",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "file": "config/ec-private-key.key",
+      "line": 1,
+      "column": 1,
+      "match": "-----BEGIN EC PRIVATE KEY-----",
+      "context": "-----BEGIN EC PRIVATE KEY-----",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "-----BEGIN EC PRIVATE KEY-----",
+            "isMatch": true
+          }
+        ],
+        "startLine": 1,
+        "endLine": 1,
+        "matchLine": 1
+      },
+      "severity": 4,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "general",
+      "language": "unknown",
+      "fileType": "key",
+      "description": "EC private key found in source code. Both a secret exposure and quantum-vulnerable algorithm.",
+      "remediation": "Remove from source. Plan migration to ML-DSA keys.",
+      "impact": "Critical: Exposed cryptographic secrets can lead to complete system compromise",
+      "effort": "Immediate action required - rotate secrets and remove from code",
+      "tags": [
+        "secret",
+        "key",
+        "quantum-vulnerable",
+        "critical"
+      ]
+    },
+    {
+      "id": "KEY-006-1-0",
+      "type": "PKCS#8 Private Key",
+      "findingType": "secret",
+      "category": "Secret Detection",
+      "migrationStatus": "CRITICAL",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "file": "config/encrypted-private-key.key",
+      "line": 1,
+      "column": 1,
+      "match": "-----BEGIN ENCRYPTED PRIVATE KEY-----",
+      "context": "-----BEGIN ENCRYPTED PRIVATE KEY-----",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "-----BEGIN ENCRYPTED PRIVATE KEY-----",
+            "isMatch": true
+          }
+        ],
+        "startLine": 1,
+        "endLine": 1,
+        "matchLine": 1
+      },
+      "severity": 4,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "encryption",
+      "language": "unknown",
+      "fileType": "key",
+      "description": "PKCS#8 private key found in source code. This is a critical security issue.",
+      "remediation": "Remove private keys from source code. Use secure key management.",
+      "impact": "Critical: Exposed cryptographic secrets can lead to complete system compromise",
+      "effort": "Immediate action required - rotate secrets and remove from code",
+      "tags": [
+        "secret",
+        "key",
+        "pkcs8",
+        "critical"
+      ]
+    },
+    {
+      "id": "KEY-004-1-0",
+      "type": "OpenSSH Private Key",
+      "findingType": "secret",
+      "category": "Secret Detection",
+      "migrationStatus": "CRITICAL",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "file": "config/openssh-private-key.key",
+      "line": 1,
+      "column": 1,
+      "match": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "context": "-----BEGIN OPENSSH PRIVATE KEY-----",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "-----BEGIN OPENSSH PRIVATE KEY-----",
+            "isMatch": true
+          }
+        ],
+        "startLine": 1,
+        "endLine": 1,
+        "matchLine": 1
+      },
+      "severity": 4,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "general",
+      "language": "unknown",
+      "fileType": "key",
+      "description": "OpenSSH private key found in source code. SSH keys should never be in code.",
+      "remediation": "Remove from source. Use SSH agent or secure key management.",
+      "impact": "Critical: Exposed cryptographic secrets can lead to complete system compromise",
+      "effort": "Immediate action required - rotate secrets and remove from code",
+      "tags": [
+        "secret",
+        "key",
+        "ssh",
+        "critical"
+      ]
+    },
+    {
+      "id": "KEY-005-1-0",
+      "type": "PGP Private Key",
+      "findingType": "secret",
+      "category": "Secret Detection",
+      "migrationStatus": "CRITICAL",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "file": "config/pgp-private-key-block.key",
+      "line": 1,
+      "column": 1,
+      "match": "-----BEGIN PGP PRIVATE KEY BLOCK-----",
+      "context": "-----BEGIN PGP PRIVATE KEY BLOCK-----",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "-----BEGIN PGP PRIVATE KEY BLOCK-----",
+            "isMatch": true
+          }
+        ],
+        "startLine": 1,
+        "endLine": 1,
+        "matchLine": 1
+      },
+      "severity": 4,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "general",
+      "language": "unknown",
+      "fileType": "key",
+      "description": "PGP private key found in source code. PGP keys (RSA/ECC) are quantum-vulnerable.",
+      "remediation": "Remove from source. Plan migration to PQC-enabled PGP when available.",
+      "impact": "Critical: Exposed cryptographic secrets can lead to complete system compromise",
+      "effort": "Immediate action required - rotate secrets and remove from code",
+      "tags": [
+        "secret",
+        "key",
+        "pgp",
+        "quantum-vulnerable",
+        "critical"
+      ]
+    },
+    {
+      "id": "KEY-001-1-0",
+      "type": "Private Key Header",
+      "findingType": "secret",
+      "category": "Secret Detection",
+      "migrationStatus": "CRITICAL",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "file": "config/private-key.key",
+      "line": 1,
+      "column": 1,
+      "match": "-----BEGIN PRIVATE KEY-----",
+      "context": "-----BEGIN PRIVATE KEY-----",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "-----BEGIN PRIVATE KEY-----",
+            "isMatch": true
+          }
+        ],
+        "startLine": 1,
+        "endLine": 1,
+        "matchLine": 1
+      },
+      "severity": 4,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "general",
+      "language": "unknown",
+      "fileType": "key",
+      "description": "Private key found in source code. This is a critical security issue.",
+      "remediation": "Remove private keys from source code. Use secure key management (HSM, vault).",
+      "impact": "Critical: Exposed cryptographic secrets can lead to complete system compromise",
+      "effort": "Immediate action required - rotate secrets and remove from code",
+      "tags": [
+        "secret",
+        "key",
+        "critical"
+      ]
+    },
+    {
+      "id": "KEY-001-1-0",
+      "type": "Private Key Header",
+      "findingType": "secret",
+      "category": "Secret Detection",
+      "migrationStatus": "CRITICAL",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "file": "config/rsa-private-key.key",
+      "line": 1,
+      "column": 1,
+      "match": "-----BEGIN RSA PRIVATE KEY-----",
+      "context": "-----BEGIN RSA PRIVATE KEY-----",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "-----BEGIN RSA PRIVATE KEY-----",
+            "isMatch": true
+          }
+        ],
+        "startLine": 1,
+        "endLine": 1,
+        "matchLine": 1
+      },
+      "severity": 4,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "general",
+      "language": "unknown",
+      "fileType": "key",
+      "description": "Private key found in source code. This is a critical security issue.",
+      "remediation": "Remove private keys from source code. Use secure key management (HSM, vault).",
+      "impact": "Critical: Exposed cryptographic secrets can lead to complete system compromise",
+      "effort": "Immediate action required - rotate secrets and remove from code",
+      "tags": [
+        "secret",
+        "key",
+        "critical"
+      ]
+    },
+    {
+      "id": "RSA-001-1-11",
+      "type": "RSA Algorithm",
+      "findingType": "algorithm",
+      "category": "Asymmetric Encryption",
+      "algorithm": "RSA",
+      "primitive": "pke",
+      "migrationStatus": "VULNERABLE",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "oid": "1.2.840.113549.1.1.1",
+      "file": "config/rsa-private-key.key",
+      "line": 1,
+      "column": 12,
+      "match": "RSA",
+      "context": "-----BEGIN RSA PRIVATE KEY-----",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "-----BEGIN RSA PRIVATE KEY-----",
+            "isMatch": true
+          }
+        ],
+        "startLine": 1,
+        "endLine": 1,
+        "matchLine": 1
+      },
+      "severity": 3,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "general",
+      "language": "unknown",
+      "fileType": "key",
+      "description": "RSA algorithm detected. RSA is vulnerable to Shor's algorithm and will be broken by cryptographically relevant quantum computers.",
+      "remediation": "Migrate to ML-KEM (FIPS 203) for key encapsulation or use hybrid RSA + ML-KEM during transition.",
+      "impact": "Long-term data confidentiality at risk from quantum computing advances",
+      "effort": "Algorithm replacement - high effort, requires PKI changes",
+      "references": [
+        "https://csrc.nist.gov/pubs/fips/203/final",
+        "https://qramm.org/learn/pqc-migration-planning"
+      ],
+      "tags": [
+        "asymmetric",
+        "quantum-vulnerable",
+        "key-exchange"
+      ]
     }
-  ]
+  ],
+  "summary": {
+    "totalFindings": 9,
+    "bySeverity": {
+      "CRITICAL": 7,
+      "HIGH": 2
+    },
+    "byCategory": {
+      "Asymmetric Encryption": 2,
+      "Secret Detection": 7
+    },
+    "byQuantumRisk": {
+      "VULNERABLE": 9
+    },
+    "byConfidence": {
+      "MEDIUM": 9
+    },
+    "byFileType": {
+      "key": 9
+    },
+    "byLanguage": {
+      "unknown": 9
+    },
+    "quantumVulnerableCount": 9,
+    "highConfidenceCount": 0,
+    "actionableCount": 0,
+    "narrativeSuppressedCount": 0
+  },
+  "migrationScore": {
+    "score": 0,
+    "level": "CRITICAL",
+    "safeCount": 0,
+    "hybridCount": 0,
+    "partialCount": 0,
+    "vulnerableCount": 2,
+    "criticalCount": 7,
+    "totalCount": 9,
+    "byPrimitive": {
+      "pke": 1,
+      "signature": 1
+    },
+    "byAlgorithm": {
+      "DSA": 1,
+      "RSA": 1
+    },
+    "topRiskFiles": [
+      {
+        "file": "config/dsa-private-key.key",
+        "vulnerableCount": 1,
+        "criticalCount": 1,
+        "totalFindings": 2,
+        "riskScore": 35
+      },
+      {
+        "file": "config/rsa-private-key.key",
+        "vulnerableCount": 1,
+        "criticalCount": 1,
+        "totalFindings": 2,
+        "riskScore": 35
+      },
+      {
+        "file": "config/ec-private-key.key",
+        "vulnerableCount": 0,
+        "criticalCount": 1,
+        "totalFindings": 1,
+        "riskScore": 25
+      },
+      {
+        "file": "config/encrypted-private-key.key",
+        "vulnerableCount": 0,
+        "criticalCount": 1,
+        "totalFindings": 1,
+        "riskScore": 25
+      },
+      {
+        "file": "config/openssh-private-key.key",
+        "vulnerableCount": 0,
+        "criticalCount": 1,
+        "totalFindings": 1,
+        "riskScore": 25
+      }
+    ],
+    "qrammReadiness": {
+      "cviScore": 40,
+      "discoveryLevel": 3,
+      "assessmentLevel": 3,
+      "mappingLevel": 2,
+      "recommendations": [
+        "CRITICAL: Remove broken algorithms (MD5, SHA-1, DES, RC4) immediately.",
+        "Plan migration from quantum-vulnerable algorithms to PQC (ML-KEM, ML-DSA).",
+        "Consider hybrid cryptography as a transition strategy.",
+        "No quantum-safe algorithms detected. Begin PQC adoption planning."
+      ]
+    }
+  },
+  "insights": [
+    {
+      "type": "migration_required",
+      "title": "RSA Migration Required (1 instances)",
+      "description": "RSA is quantum-vulnerable and will be broken by Shor's algorithm. All RSA usage must migrate to ML-KEM (FIPS 203) for key encapsulation.",
+      "priority": "high",
+      "effort": "medium",
+      "findingIds": [
+        "RSA-001-1-11"
+      ],
+      "action": "1. Inventory all RSA usage\n2. Implement hybrid RSA+ML-KEM during transition\n3. Complete migration to pure ML-KEM by 2030"
+    },
+    {
+      "type": "security_critical",
+      "title": "Private Keys/Secrets Exposed (7 instances)",
+      "description": "Private keys or secrets found in source code. This is a critical security issue requiring immediate action.",
+      "priority": "critical",
+      "effort": "low",
+      "findingIds": [
+        "KEY-003-1-0",
+        "KEY-002-1-0",
+        "KEY-006-1-0",
+        "KEY-004-1-0",
+        "KEY-005-1-0",
+        "KEY-001-1-0",
+        "KEY-001-1-0"
+      ],
+      "action": "1. Immediately rotate all exposed credentials\n2. Remove secrets from source code\n3. Use secrets management (Vault, AWS Secrets Manager, etc.)"
+    }
+  ],
+  "scanTarget": ".",
+  "scanTime": "2026-10-14T11:06:31.972516209Z",
+  "scanDuration": 3712417,
+  "filesScanned": 7,
+  "linesScanned": 7,
+  "bytesScanned": 235,
+  "languageStats": {
+    "unknown": 7
+  }
 }

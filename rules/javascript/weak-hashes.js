@@ -19,3 +19,19 @@ function safe() {
     // ok: pqc.javascript.md5
     crypto.createHash('sha256').update('safe').digest('hex');
 }
+
+const { createHash } = require("node:crypto");
+const nc = require("node:crypto");
+
+function aliased() {
+    // ruleid: pqc.javascript.md5
+    createHash("md5").update("x").digest("hex");
+    // ruleid: pqc.javascript.md5
+    nc.createHash("Md5").update("x").digest("hex");
+    // ruleid: pqc.javascript.sha1
+    createHash("sha1").update("y").digest("hex");
+    // ruleid: pqc.javascript.sha1
+    nc.createHash("sha1", { outputLength: 20 }).update("y").digest("hex");
+    // ok: pqc.javascript.sha1
+    createHash("sha256").update("safe").digest("hex");
+}

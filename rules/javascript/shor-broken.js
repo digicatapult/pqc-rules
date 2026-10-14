@@ -37,3 +37,29 @@ function safe() {
     // ok: pqc.javascript.rsa
     crypto.randomBytes(32);
 }
+
+const { generateKeyPairSync, generateKeyPair, createECDH, getDiffieHellman } = require("node:crypto");
+const nc = require("node:crypto");
+
+function aliased() {
+    // ruleid: pqc.javascript.rsa
+    generateKeyPairSync("rsa", { modulusLength: 2048 });
+    // ruleid: pqc.javascript.rsa
+    nc.generateKeyPairSync("RSA", { modulusLength: 2048 });
+    // ruleid: pqc.javascript.rsa
+    generateKeyPair("rsa-pss", { modulusLength: 2048 }, () => {});
+    // ruleid: pqc.javascript.ec
+    nc.generateKeyPairSync("EC", { namedCurve: "P-256" });
+    // ruleid: pqc.javascript.ec
+    createECDH("prime256v1");
+    // ruleid: pqc.javascript.dsa
+    nc.generateKeyPairSync("dsa", { modulusLength: 2048 });
+    // ruleid: pqc.javascript.dh
+    getDiffieHellman("modp14");
+    // ruleid: pqc.javascript.x25519
+    generateKeyPairSync("x25519");
+    // ruleid: pqc.javascript.ed25519
+    nc.generateKeyPairSync("ed25519");
+    // ok: pqc.javascript.rsa
+    generateKeyPairSync("ml-dsa-65");
+}

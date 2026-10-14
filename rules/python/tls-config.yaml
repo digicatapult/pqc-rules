@@ -18,6 +18,14 @@ rules:
       - pattern: $CTX.minimum_version = ssl.TLSVersion.SSLv3
       - pattern: ssl.SSLContext(ssl.PROTOCOL_TLSv1)
       - pattern: ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
+      - pattern: ssl.SSLContext(ssl.PROTOCOL_SSLv3)
+      - pattern: $F(..., ssl_version=ssl.PROTOCOL_TLSv1, ...)
+      - pattern: $F(..., ssl_version=ssl.PROTOCOL_TLSv1_1, ...)
+      - pattern: $F(..., ssl_version=ssl.PROTOCOL_SSLv3, ...)
+      # pyOpenSSL; these are OpenSSL's TLSv1_method() and friends.
+      - pattern: OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
+      - pattern: OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_1_METHOD)
+      - pattern: OpenSSL.SSL.Context(OpenSSL.SSL.SSLv3_METHOD)
 
   - id: pqc.python.tls-classical-groups
     languages: [python]

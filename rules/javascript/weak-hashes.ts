@@ -19,3 +19,13 @@ function safe(): void {
     // ok: pqc.javascript.md5
     const ok: string = crypto.createHash("sha256").update("safe").digest("hex");
 }
+
+import { createHash } from "node:crypto";
+import nodeCrypto from "node:crypto";
+
+function imported(): void {
+    // ruleid: pqc.javascript.md5
+    const m3: string = createHash("md5").update("x").digest("hex");
+    // ruleid: pqc.javascript.sha1
+    const s3: string = nodeCrypto.createHash("SHA1").update("y").digest("hex");
+}

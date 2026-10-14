@@ -24,3 +24,13 @@ function safe(): void {
         Buffer.alloc(12),
     ) as crypto.CipherGCM;
 }
+
+import { createCipheriv } from "node:crypto";
+import * as nc from "node:crypto";
+
+function imported(): void {
+    // ruleid: pqc.javascript.des
+    const c4 = createCipheriv("des-cbc", Buffer.alloc(8), Buffer.alloc(8));
+    // ruleid: pqc.javascript.rc4
+    const c5 = nc.createCipheriv("rc4", Buffer.alloc(16), null);
+}

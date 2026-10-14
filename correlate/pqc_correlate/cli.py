@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 from .correlate import DEFAULT_ALLOWLIST, correlate
@@ -33,8 +34,6 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
                         help="comma-separated SOURCE:RULE_ID globs to report even when single-source")
     parser.add_argument("--allowlist-disable", action="store_true",
                         help="drop the default allowlist; only corroborated findings are reported")
-    parser.add_argument("--runtime-anchor", default="README.md",
-                        help="repo file that runtime (TLS) results are attached to in SARIF")
     parser.add_argument("--expected", default="",
                         help="comma-separated sources the caller enabled, to flag any that produced no input")
     return parser.parse_args(argv)
@@ -54,12 +53,15 @@ def main(argv: list[str] | None = None) -> int:
         allowlist = _allowlist(args)
         findings: list[Finding] = []
         sources_run: list[str] = []
+        unmapped: dict[str, Counter[str]] = {}
         for source, parser in PARSERS.items():
             paths: list[Path] = getattr(args, source)
             for path in paths:
-                findings.extend(parser(path, args.root))
+                parsed = parser(path, args.root)
+                findings.extend(parsed.findings)
+                unmapped.setdefault(source, Counter()).update(parsed.unmapped)
             if paths:
-                sources_run.append("tls-analyzer" if source == "tls" else source)
+                sources_run.append(source)
         groups = correlate(findings, args.window, allowlist)
     except (InputError, ValueError) as exc:
         print(f"pqc_correlate: error: {exc}", file=sys.stderr)
@@ -67,10 +69,10 @@ def main(argv: list[str] | None = None) -> int:
 
     expected = [s.strip() for s in args.expected.split(",") if s.strip()]
     args.out.mkdir(parents=True, exist_ok=True)
-    (args.out / OUTPUT_FILES["all"]).write_text(json.dumps(to_json(groups, sources_run), indent=2))
+    (args.out / OUTPUT_FILES["all"]).write_text(json.dumps(to_json(groups, sources_run, unmapped), indent=2))
     (args.out / OUTPUT_FILES["cbom"]).write_text(json.dumps(to_cbom(groups), indent=2))
-    (args.out / OUTPUT_FILES["sarif"]).write_text(json.dumps(to_sarif(groups, args.runtime_anchor), indent=2))
-    (args.out / OUTPUT_FILES["summary"]).write_text(to_summary(groups, sources_run, expected))
+    (args.out / OUTPUT_FILES["sarif"]).write_text(json.dumps(to_sarif(groups), indent=2))
+    (args.out / OUTPUT_FILES["summary"]).write_text(to_summary(groups, sources_run, expected, unmapped))
     return 0
 
 

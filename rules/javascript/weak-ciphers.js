@@ -16,3 +16,17 @@ function safe() {
     // ok: pqc.javascript.des
     crypto.createCipheriv('aes-256-gcm', Buffer.alloc(32), Buffer.alloc(12));
 }
+
+const { createCipheriv } = require("node:crypto");
+const nc = require("node:crypto");
+
+function aliased() {
+    // ruleid: pqc.javascript.des
+    createCipheriv("DES-CBC", Buffer.alloc(8), Buffer.alloc(8));
+    // ruleid: pqc.javascript.3des
+    nc.createCipheriv("des-ede3-cbc", Buffer.alloc(24), Buffer.alloc(8));
+    // ruleid: pqc.javascript.rc4
+    createCipheriv("RC4", Buffer.alloc(16), null);
+    // ok: pqc.javascript.des
+    createCipheriv("aes-256-gcm", Buffer.alloc(32), Buffer.alloc(12));
+}

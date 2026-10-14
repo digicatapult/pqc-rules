@@ -25,18 +25,7 @@ jobs:
         run: semgrep scan --test --metrics=off --config rules/ rules/
       - name: Verify TypeScript fixtures
         run: python scripts/test_typescript_fixtures.py
-      - name: Check every rule carries correlator metadata
-        run: |
-          set -euo pipefail
-          ids=$(grep -rh '^  - id:' rules | wc -l)
-          for key in pqc-family pqc-risk; do
-            count=$(grep -rh "${key}:" rules | wc -l)
-            if [[ "$count" -ne "$ids" ]]; then
-              printf '::error::%s rules but %s carry %s\n' "$ids" "$count" "$key"
-              exit 1
-            fi
-          done
-      - name: Run correlator tests
+      - name: Run correlator and rule metadata tests
         env:
           PYTHONPATH: correlate
         run: python -m pytest -q correlate/tests

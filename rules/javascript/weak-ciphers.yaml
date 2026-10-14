@@ -13,13 +13,13 @@ rules:
       cwe:
         - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
       nist-pqc-replacement: "AES-256-GCM"
-    pattern-either:
-      - pattern: crypto.createCipheriv("des", ...)
-      - pattern: crypto.createCipheriv('des', ...)
-      - pattern: crypto.createCipheriv("des-cbc", ...)
-      - pattern: crypto.createCipheriv('des-cbc', ...)
-      - pattern: crypto.createCipheriv("des-ecb", ...)
-      - pattern: crypto.createCipheriv('des-ecb', ...)
+    patterns:
+      - pattern-either:
+          - pattern: $C.createCipheriv($ALG, ...)
+          - pattern: createCipheriv($ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: (?i)^['"`](des|des-cbc|des-ecb)['"`]$
 
   - id: pqc.javascript.3des
     languages: [javascript, typescript]
@@ -35,13 +35,13 @@ rules:
       cwe:
         - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
       nist-pqc-replacement: "AES-256-GCM"
-    pattern-either:
-      - pattern: crypto.createCipheriv("des-ede3", ...)
-      - pattern: crypto.createCipheriv('des-ede3', ...)
-      - pattern: crypto.createCipheriv("des-ede3-cbc", ...)
-      - pattern: crypto.createCipheriv('des-ede3-cbc', ...)
-      - pattern: crypto.createCipheriv("des3", ...)
-      - pattern: crypto.createCipheriv('des3', ...)
+    patterns:
+      - pattern-either:
+          - pattern: $C.createCipheriv($ALG, ...)
+          - pattern: createCipheriv($ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: (?i)^['"`](des-ede3|des-ede3-cbc|des3)['"`]$
 
   - id: pqc.javascript.rc4
     languages: [javascript, typescript]
@@ -57,8 +57,10 @@ rules:
       cwe:
         - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
       nist-pqc-replacement: "AES-256-GCM or ChaCha20-Poly1305"
-    pattern-either:
-      - pattern: crypto.createCipheriv("rc4", ...)
-      - pattern: crypto.createCipheriv('rc4', ...)
-      - pattern: crypto.createCipheriv("rc4-40", ...)
-      - pattern: crypto.createCipheriv('rc4-40', ...)
+    patterns:
+      - pattern-either:
+          - pattern: $C.createCipheriv($ALG, ...)
+          - pattern: createCipheriv($ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: (?i)^['"`](rc4|rc4-40)['"`]$

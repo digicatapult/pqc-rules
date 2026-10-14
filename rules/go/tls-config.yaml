@@ -11,23 +11,30 @@ rules:
       pqc-family: TLS-legacy
       pqc-risk: broken
       nist-pqc-replacement: "TLS 1.3 with X25519MLKEM768"
-    pattern-either:
-      - pattern: "tls.Config{..., MinVersion: tls.VersionTLS10, ...}"
-      - pattern: "tls.Config{..., MinVersion: tls.VersionTLS11, ...}"
+    patterns:
+      - pattern-either:
+          - pattern: "tls.Config{..., MinVersion: $V, ...}"
+          - pattern: $CFG.MinVersion = $V
+      - metavariable-regex:
+          metavariable: $V
+          regex: ^tls\.Version(TLS10|TLS11|SSL30)$
 
   - id: pqc.go.tls-hybrid-groups
     languages: [go]
     severity: INFO
     message: |
-      tls.Config prefers the hybrid post-quantum group X25519MLKEM768. This is
-      the recommended transition configuration.
+      TLS curve preferences include a hybrid post-quantum group (ML-KEM).
+      This is the recommended transition configuration.
     metadata:
       category: security
       pqc-category: pqc-hybrid
       pqc-family: ML-KEM
       pqc-risk: hybrid
       nist-pqc-replacement: "n/a"
-    pattern: "[]tls.CurveID{..., tls.X25519MLKEM768, ...}"
+    pattern-either:
+      - pattern: "[]tls.CurveID{..., tls.X25519MLKEM768, ...}"
+      - pattern: "[]tls.CurveID{..., tls.SecP256r1MLKEM768, ...}"
+      - pattern: "[]tls.CurveID{..., tls.SecP384r1MLKEM1024, ...}"
 
   - id: pqc.go.tls-classical-groups
     languages: [go]
@@ -41,6 +48,10 @@ rules:
       pqc-family: ECC
       pqc-risk: vulnerable
       nist-pqc-replacement: "X25519MLKEM768 (hybrid ML-KEM, FIPS 203)"
+    # Only a literal list is judged here. nil means Go's defaults (hybrid first), and a
+    # variable or call is judged where its list literal is written.
     patterns:
-      - pattern: "tls.Config{..., CurvePreferences: $C, ...}"
+      - pattern: "tls.Config{..., CurvePreferences: []tls.CurveID{...}, ...}"
       - pattern-not: "tls.Config{..., CurvePreferences: []tls.CurveID{..., tls.X25519MLKEM768, ...}, ...}"
+      - pattern-not: "tls.Config{..., CurvePreferences: []tls.CurveID{..., tls.SecP256r1MLKEM768, ...}, ...}"
+      - pattern-not: "tls.Config{..., CurvePreferences: []tls.CurveID{..., tls.SecP384r1MLKEM1024, ...}, ...}"
