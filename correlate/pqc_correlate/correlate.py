@@ -13,11 +13,6 @@ CORROBORATED = "corroborated"
 SINGLE_SOURCE = "single-source"
 CONFLICTING = "conflicting"
 
-# Single-source findings that are facts rather than pattern guesses:
-# cryptoscan KEY-001..006 match PEM private-key headers committed to the repo.
-DEFAULT_ALLOWLIST: tuple[str, ...] = ("cryptoscan:KEY-00*",)
-
-
 # Sources whose findings are rule-precise: each one is a distinct finding and is never
 # merged with another finding from the same source, however close it is.
 ANCHOR_SOURCES: frozenset[str] = frozenset({"semgrep"})

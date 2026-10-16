@@ -11,6 +11,7 @@ from typing import Any
 from . import __version__
 from .families import RISK_ORDER
 from .correlate import CONFLICTING, CORROBORATED, SINGLE_SOURCE, Group, reportable
+from .normalise import Finding
 
 TOOL_NAME = "pqc-correlate"
 INFORMATION_URI = "https://github.com/digicatapult/pqc-rules"
@@ -66,25 +67,31 @@ def _crypto_properties(family: str) -> dict[str, Any]:
 
 
 def to_cbom(groups: list[Group]) -> dict[str, Any]:
-    """CycloneDX 1.6 CBOM: one cryptographic-asset component per algorithm family."""
-    by_family: dict[str, list[Group]] = defaultdict(list)
+    """CycloneDX 1.6 CBOM: one cryptographic-asset component per algorithm family.
+
+    Built from each finding's own family rather than each group's anchor, because a group
+    can hold several families that share a match key (ML-DSA, SLH-DSA, FN-DSA, XMSS, LMS),
+    and every one of them belongs in the inventory.
+    """
+    by_family: dict[str, list[tuple[Finding, Group]]] = defaultdict(list)
     for group in groups:
-        by_family[group.anchor.family].append(group)
+        for finding in group.findings:
+            by_family[finding.family].append((finding, group))
     components = []
     for family in sorted(by_family):
         members = by_family[family]
-        occurrences = [{"location": g.anchor.file, "line": g.anchor.line} for g in members]
+        locations = sorted({(finding.file, finding.line) for finding, _ in members})
         component: dict[str, Any] = {
             "type": "cryptographic-asset",
             "bom-ref": f"crypto/algorithm/{family}",
             "name": family,
             "cryptoProperties": _crypto_properties(family),
             "properties": [
-                {"name": "pqc:risk", "value": min((g.risk for g in members), key=RISK_ORDER.index)},
-                {"name": "pqc:evidence", "value": ",".join(sorted({g.evidence for g in members}))},
+                {"name": "pqc:risk", "value": min((f.risk for f, _ in members), key=RISK_ORDER.index)},
+                {"name": "pqc:evidence", "value": ",".join(sorted({g.evidence for _, g in members}))},
             ],
         }
-        component["evidence"] = {"occurrences": occurrences}
+        component["evidence"] = {"occurrences": [{"location": file, "line": line} for file, line in locations]}
         components.append(component)
     return {
         "bomFormat": "CycloneDX",

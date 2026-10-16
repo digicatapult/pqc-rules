@@ -74,8 +74,8 @@ def test_partial_risk_is_never_reported(tmp_path: Path) -> None:
     assert aes["reported"] is False
 
 
-def test_allowlist_disable_reports_only_corroborated(tmp_path: Path) -> None:
-    _, data, sarif = run(tmp_path, *all_sources("--allowlist-disable"))
+def test_without_allowlist_only_corroborated_is_reported(tmp_path: Path) -> None:
+    _, data, sarif = run(tmp_path, *all_sources())
     assert all(g["evidence"] == CORROBORATED for g in data["groups"] if g["reported"])
     assert {r["level"] for r in sarif["runs"][0]["results"]} == {"warning"}
 

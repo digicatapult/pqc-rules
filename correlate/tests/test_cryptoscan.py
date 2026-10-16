@@ -30,19 +30,33 @@ def test_every_committed_key_header_is_kept() -> None:
     assert by_rule["RSA-001"] == {("RSA", "vulnerable")}
 
 
-def test_every_committed_key_is_reported_by_default(tmp_path: Path) -> None:
+def _key_groups(out: Path) -> list[dict]:
+    groups = json.loads((out / "pqc-all.json").read_text())["groups"]
+    return [g for g in groups if any(f["rule_id"].startswith("KEY-") for f in g["findings"])]
+
+
+def test_committed_keys_are_kept_but_not_reported_by_default(tmp_path: Path) -> None:
+    # KEY-00* also matches PEM header strings in code and tests, so keys are left to secret
+    # scanning and only recorded in the artefacts.
     out = tmp_path / "out"
     assert main(["--root", str(FIXTURES), "--out", str(out), "--cryptoscan", str(FIXTURES / "cryptoscan-key.json")]) == 0
-    groups = json.loads((out / "pqc-all.json").read_text())["groups"]
-    key_files = {g["file"] for g in groups if any(f["rule_id"].startswith("KEY-") for f in g["findings"])}
-    assert len(key_files) == 7
-    for group in groups:
-        if any(f["rule_id"].startswith("KEY-") for f in group["findings"]):
-            assert group["allowlisted"] and group["reported"], group["file"]
+    key_groups = _key_groups(out)
+    assert len({g["file"] for g in key_groups}) == 7
+    assert not any(g["allowlisted"] or g["reported"] for g in key_groups)
+    assert json.loads((out / "pqc-security.sarif").read_text())["runs"][0]["results"] == []
     cbom = json.loads((out / "pqc-cbom.cdx.json").read_text())
     key = next(c for c in cbom["components"] if c["name"] == "private-key")
     assert key["cryptoProperties"]["assetType"] == "related-crypto-material"
     assert len(key["evidence"]["occurrences"]) == 5
+
+
+def test_committed_keys_can_be_allowlisted(tmp_path: Path) -> None:
+    out = tmp_path / "out"
+    assert main(["--root", str(FIXTURES), "--out", str(out), "--cryptoscan", str(FIXTURES / "cryptoscan-key.json"),
+                 "--allowlist-extra", "cryptoscan:KEY-00*"]) == 0
+    key_groups = _key_groups(out)
+    assert key_groups
+    assert all(g["allowlisted"] and g["reported"] for g in key_groups)
 
 
 def test_legacy_tls_maps_by_id_and_modern_tls_is_counted_as_unmapped() -> None:
@@ -77,15 +91,50 @@ def test_falcon_does_not_join_a_neighbouring_dsa_group() -> None:
     assert dsa_group.sources == ["semgrep"]
 
 
+def test_cbom_lists_every_post_quantum_signature_in_a_shared_group(tmp_path: Path) -> None:
+    # FN-DSA, XMSS and LMS on lines 1-3 share a match key, so they form one group.
+    out = tmp_path / "out"
+    assert main(["--root", str(FIXTURES), "--out", str(out),
+                 "--cryptoscan", str(FIXTURES / "cryptoscan-mapping.json")]) == 0
+    groups = json.loads((out / "pqc-all.json").read_text())["groups"]
+    assert len([g for g in groups if g["file"] == "pq_signatures.py"]) == 1
+    cbom = json.loads((out / "pqc-cbom.cdx.json").read_text())
+    components = {c["name"]: c for c in cbom["components"]}
+    for family in ("FN-DSA", "XMSS", "LMS"):
+        component = components[family]
+        assert [o["location"] for o in component["evidence"]["occurrences"]] == ["pq_signatures.py"]
+        assert {"name": "pqc:risk", "value": "safe"} in component["properties"]
+
+
 def test_dependency_findings_split_into_one_finding_per_family() -> None:
     parsed = parse_cryptoscan(FIXTURES / "cryptoscan-mapping.json", FIXTURES)
-    by_file: dict[str, list[str]] = {}
+    by_file: dict[str, list[tuple[str, str]]] = {}
     for finding in parsed.findings:
         if finding.rule_id.startswith("DEP-"):
-            by_file.setdefault(finding.file, []).append(finding.family)
+            by_file.setdefault(finding.file, []).append((finding.family, finding.risk))
     # node-forge: "RSA, AES, DES, SHA, MD5". Bare "SHA" names no family and is skipped.
-    assert by_file["package.json"] == ["RSA", "AES", "DES", "MD5"]
-    assert by_file["requirements.txt"] == ["RSA", "ECC", "AES", "ChaCha20"]
+    # cryptoscan rates both libraries VULNERABLE as a whole; each algorithm gets its own risk.
+    assert by_file["package.json"] == [
+        ("RSA", "vulnerable"), ("AES", "partial"), ("DES", "broken"), ("MD5", "broken"),
+    ]
+    assert by_file["requirements.txt"] == [
+        ("RSA", "vulnerable"), ("ECC", "vulnerable"), ("AES", "partial"), ("ChaCha20", "partial"),
+    ]
+
+
+def test_safe_dependency_does_not_make_classical_algorithms_safe(tmp_path: Path) -> None:
+    # Same shape as the fixture's dependency findings, for a library cryptoscan rates SAFE.
+    finding = {
+        "id": "DEP-bcprov-jdk18on-pom.xml", "type": "Crypto Library Dependency",
+        "findingType": "dependency", "category": "dependency",
+        "algorithm": "RSA, ECC, AES, ML-KEM", "quantumRisk": "SAFE", "file": "pom.xml", "line": 1,
+    }
+    path = tmp_path / "cryptoscan.json"
+    path.write_text(json.dumps({"findings": [finding]}))
+    parsed = parse_cryptoscan(path, tmp_path)
+    assert [(f.family, f.risk) for f in parsed.findings] == [
+        ("RSA", "vulnerable"), ("ECC", "vulnerable"), ("AES", "partial"), ("ML-KEM", "safe"),
+    ]
 
 
 def test_unmapped_findings_are_counted_in_outputs(tmp_path: Path) -> None:

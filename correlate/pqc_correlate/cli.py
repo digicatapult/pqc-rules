@@ -8,7 +8,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from .correlate import DEFAULT_ALLOWLIST, correlate
+from .correlate import correlate
 from .normalise import PARSERS, Finding, InputError
 from .outputs import to_cbom, to_json, to_sarif, to_summary
 
@@ -32,19 +32,19 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
                         help="max line distance for findings to be treated as the same (default 3)")
     parser.add_argument("--allowlist-extra", default="",
                         help="comma-separated SOURCE:RULE_ID globs to report even when single-source")
-    parser.add_argument("--allowlist-disable", action="store_true",
-                        help="drop the default allowlist; only corroborated findings are reported")
     parser.add_argument("--expected", default="",
                         help="comma-separated sources the caller enabled, to flag any that produced no input")
     return parser.parse_args(argv)
 
 
 def _allowlist(args: argparse.Namespace) -> tuple[str, ...]:
-    extra = tuple(p.strip() for p in args.allowlist_extra.split(",") if p.strip())
-    for pattern in extra:
+    """The caller's allowlist. There is no default: committed private keys are left to secret
+    scanning, because cryptoscan's KEY-00* patterns also match PEM header strings in code."""
+    allowlist = tuple(p.strip() for p in args.allowlist_extra.split(",") if p.strip())
+    for pattern in allowlist:
         if ":" not in pattern:
             raise InputError(f"allowlist entry {pattern!r} must be SOURCE:RULE_ID (e.g. semgrep:pqc.javascript.rsa)")
-    return extra if args.allowlist_disable else DEFAULT_ALLOWLIST + extra
+    return allowlist
 
 
 def main(argv: list[str] | None = None) -> int:

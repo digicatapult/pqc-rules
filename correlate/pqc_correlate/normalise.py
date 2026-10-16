@@ -115,6 +115,10 @@ _CRYPTOSCAN_PATTERN_FAMILY: dict[str, str | None] = {
 }
 
 
+def _is_dependency(item: dict[str, Any]) -> bool:
+    return item.get("category") == "dependency" or item.get("findingType") == "dependency"
+
+
 def _cryptoscan_families(pattern_id: str, item: dict[str, Any]) -> list[str]:
     """Families a cryptoscan finding refers to: by pattern id first, then by its text.
 
@@ -125,7 +129,7 @@ def _cryptoscan_families(pattern_id: str, item: dict[str, Any]) -> list[str]:
         family = _CRYPTOSCAN_PATTERN_FAMILY[pattern_id]
         return [family] if family else []
     algorithm = str(item.get("algorithm") or "")
-    if item.get("category") == "dependency" or item.get("findingType") == "dependency":
+    if _is_dependency(item):
         families = (normalise_family(part) for part in algorithm.split(","))
         return list(dict.fromkeys(f for f in families if f))
     family = normalise_family(algorithm) or normalise_family(item.get("type"))
@@ -143,6 +147,9 @@ def parse_cryptoscan(path: Path, root: Path) -> Parsed:
         if not families:
             parsed.unmapped[pattern_id] += 1
             continue
+        # A dependency's quantumRisk rates the library as a whole (node-forge VULNERABLE,
+        # Bouncy Castle SAFE), not each algorithm it provides, so use the family default.
+        source_risk = None if _is_dependency(item) else item.get("quantumRisk")
         for family in families:
             parsed.findings.append(
                 Finding(
@@ -150,7 +157,7 @@ def parse_cryptoscan(path: Path, root: Path) -> Parsed:
                     file=_relative(str(item.get("file", "")), root),
                     line=_line(item.get("line"), path),
                     family=family,
-                    risk=normalise_risk(item.get("quantumRisk"), family),
+                    risk=normalise_risk(source_risk, family),
                     rule_id=pattern_id,
                     message=str(item.get("description") or item.get("type") or pattern_id),
                     extra={"category": item.get("category"), "confidence": item.get("confidence")},
