@@ -1,0 +1,37 @@
+rules:
+  - id: pqc.python.jwt-rsa
+    languages: [python]
+    severity: WARNING
+    message: |
+      JWT signed with an RSA algorithm (RS*/PS*). Broken by Shor's algorithm
+      on a CRQC. Plan migration to ML-DSA (FIPS 204) once PQ JOSE algorithms
+      are standardised.
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: RSA
+      pqc-risk: vulnerable
+      nist-pqc-replacement: "ML-DSA (FIPS 204)"
+    patterns:
+      - pattern: jwt.encode(..., algorithm=$ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: ^['"](RS|PS)(256|384|512)['"]$
+
+  - id: pqc.python.jwt-ecc
+    languages: [python]
+    severity: WARNING
+    message: |
+      JWT signed with an elliptic-curve algorithm (ES*/EdDSA). Broken by
+      Shor's algorithm on a CRQC. Plan migration to ML-DSA (FIPS 204).
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: ECC
+      pqc-risk: vulnerable
+      nist-pqc-replacement: "ML-DSA (FIPS 204)"
+    patterns:
+      - pattern: jwt.encode(..., algorithm=$ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: ^['"](ES(256|384|512|256K)|EdDSA)['"]$

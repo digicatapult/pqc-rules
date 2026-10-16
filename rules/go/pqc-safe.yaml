@@ -1,0 +1,33 @@
+rules:
+  - id: pqc.go.ml-kem
+    languages: [go]
+    severity: INFO
+    message: ML-KEM (FIPS 203) via crypto/mlkem or circl. Quantum-resistant.
+    metadata:
+      category: security
+      pqc-category: pqc-safe
+      pqc-family: ML-KEM
+      pqc-risk: safe
+      nist-pqc-replacement: "n/a"
+    pattern-either:
+      - pattern: mlkem.GenerateKey768()
+      - pattern: mlkem.GenerateKey1024()
+      - pattern: mlkem.NewEncapsulationKey768(...)
+      - pattern: mlkem.NewEncapsulationKey1024(...)
+      - pattern: mlkem768.GenerateKeyPair(...)
+      - pattern: mlkem1024.GenerateKeyPair(...)
+
+  - id: pqc.go.ml-dsa
+    languages: [go]
+    severity: INFO
+    message: ML-DSA (FIPS 204) via circl. Quantum-resistant.
+    metadata:
+      category: security
+      pqc-category: pqc-safe
+      pqc-family: ML-DSA
+      pqc-risk: safe
+      nist-pqc-replacement: "n/a"
+    pattern-either:
+      - pattern: mldsa44.GenerateKey(...)
+      - pattern: mldsa65.GenerateKey(...)
+      - pattern: mldsa87.GenerateKey(...)

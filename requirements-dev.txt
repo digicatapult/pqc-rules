@@ -1,0 +1,4 @@
+# Test-only tooling, pinned so CI matches the versions fixtures were generated with;
+# Renovate bumps them. The correlator itself uses the Python standard library only.
+pytest==9.1.1
+semgrep==1.180.0

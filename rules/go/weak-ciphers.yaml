@@ -1,0 +1,51 @@
+rules:
+  - id: pqc.go.des
+    languages: [go]
+    severity: ERROR
+    message: |
+      DES detected (Go crypto/des). 56-bit key brute-forceable.
+      Migrate to AES-256-GCM (crypto/aes + crypto/cipher).
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: DES
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "AES-256-GCM"
+    pattern-either:
+      - pattern: des.NewCipher(...)
+
+  - id: pqc.go.3des
+    languages: [go]
+    severity: WARNING
+    message: |
+      Triple DES detected (Go crypto/des NewTripleDESCipher). Sweet32
+      vulnerable; deprecated by NIST. Migrate to AES-256-GCM.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: 3DES
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "AES-256-GCM"
+    pattern-either:
+      - pattern: des.NewTripleDESCipher(...)
+
+  - id: pqc.go.rc4
+    languages: [go]
+    severity: ERROR
+    message: |
+      RC4 detected (Go crypto/rc4). Keystream biases make it broken;
+      prohibited by RFC 7465. Migrate to AES-256-GCM or ChaCha20-Poly1305.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: RC4
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "AES-256-GCM or ChaCha20-Poly1305"
+    pattern-either:
+      - pattern: rc4.NewCipher(...)

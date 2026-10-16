@@ -1,0 +1,36 @@
+rules:
+  - id: pqc.go.md5
+    languages: [go]
+    severity: ERROR
+    message: |
+      MD5 detected (Go crypto/md5). Collisions trivially producible;
+      unsafe for any security purpose. Migrate to SHA-256 / SHA-3-256.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: MD5
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "SHA-256 / SHA-3-256"
+    pattern-either:
+      - pattern: md5.New()
+      - pattern: md5.Sum(...)
+
+  - id: pqc.go.sha1
+    languages: [go]
+    severity: WARNING
+    message: |
+      SHA-1 detected (Go crypto/sha1). Practical collisions demonstrated
+      (SHAttered 2017); deprecated by NIST. Migrate to SHA-256 / SHA-3-256.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: SHA-1
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "SHA-256 / SHA-3-256"
+    pattern-either:
+      - pattern: sha1.New()
+      - pattern: sha1.Sum(...)

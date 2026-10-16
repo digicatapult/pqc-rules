@@ -1,0 +1,44 @@
+rules:
+  - id: pqc.javascript.md5
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: |
+      MD5 detected. Collisions trivially producible; unsafe for any
+      security purpose. Migrate to SHA-256 / SHA-3-256.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: MD5
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "SHA-256 / SHA-3-256"
+    patterns:
+      - pattern-either:
+          - pattern: $C.createHash($ALG, ...)
+          - pattern: createHash($ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: (?i)^['"`](md5)['"`]$
+
+  - id: pqc.javascript.sha1
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: |
+      SHA-1 detected. Practical collisions demonstrated (SHAttered 2017);
+      deprecated by NIST. Migrate to SHA-256 / SHA-3-256.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: SHA-1
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "SHA-256 / SHA-3-256"
+    patterns:
+      - pattern-either:
+          - pattern: $C.createHash($ALG, ...)
+          - pattern: createHash($ALG, ...)
+      - metavariable-regex:
+          metavariable: $ALG
+          regex: (?i)^['"`](sha1)['"`]$

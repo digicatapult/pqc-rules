@@ -1,0 +1,42 @@
+rules:
+  - id: pqc.python.tls-legacy-version
+    languages: [python]
+    severity: ERROR
+    message: |
+      TLS configured to accept TLS 1.0 / 1.1 (or SSL). Deprecated by RFC 8996
+      and unable to negotiate post-quantum key exchange. Use
+      ssl.TLSVersion.TLSv1_3 (or at least TLSv1_2).
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: TLS-legacy
+      pqc-risk: broken
+      nist-pqc-replacement: "TLS 1.3 with X25519MLKEM768"
+    pattern-either:
+      - pattern: $CTX.minimum_version = ssl.TLSVersion.TLSv1
+      - pattern: $CTX.minimum_version = ssl.TLSVersion.TLSv1_1
+      - pattern: $CTX.minimum_version = ssl.TLSVersion.SSLv3
+      - pattern: ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+      - pattern: ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
+      - pattern: ssl.SSLContext(ssl.PROTOCOL_SSLv3)
+      - pattern: $F(..., ssl_version=ssl.PROTOCOL_TLSv1, ...)
+      - pattern: $F(..., ssl_version=ssl.PROTOCOL_TLSv1_1, ...)
+      - pattern: $F(..., ssl_version=ssl.PROTOCOL_SSLv3, ...)
+      # pyOpenSSL; these are OpenSSL's TLSv1_method() and friends.
+      - pattern: OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
+      - pattern: OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_1_METHOD)
+      - pattern: OpenSSL.SSL.Context(OpenSSL.SSL.SSLv3_METHOD)
+
+  - id: pqc.python.tls-classical-groups
+    languages: [python]
+    severity: WARNING
+    message: |
+      TLS ECDH curve pinned to a classical curve. Harvest-now-decrypt-later
+      exposure. Prefer the hybrid group X25519MLKEM768 where supported.
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: ECC
+      pqc-risk: vulnerable
+      nist-pqc-replacement: "X25519MLKEM768 (hybrid ML-KEM, FIPS 203)"
+    pattern: $CTX.set_ecdh_curve(...)

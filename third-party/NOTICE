@@ -1,0 +1,13 @@
+pqc-rules
+Copyright Digital Catapult
+
+The Semgrep rules and fixtures under rules/, and scripts/test_typescript_fixtures.py,
+are in part derived from pqc-semgrep-rules v0.1.0
+(https://github.com/pe-version/pqc-semgrep-rules, commit
+0faef514773d63170003fb0848dd42bc175dfa85), used under the MIT License. The
+original licence text is retained in third-party/LICENSE.
+
+Changes from upstream:
+- pqc-family and pqc-risk metadata added to every rule;
+- new rule files for JWT, WebCrypto, node-forge, TLS configuration and
+post-quantum (safe/hybrid) algorithm detection.
