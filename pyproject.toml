@@ -1,0 +1,32 @@
+[project]
+name = "pqc-correlate"
+version = "0.1.1"
+description = "Second-pass correlator for post-quantum cryptography scan results from Semgrep (pqc-rules) and cryptoscan."
+readme = "README.md"
+license = "Apache-2.0"
+# Capped below 3.15: Semgrep derives semgrep-core's stack limit from RLIM_INFINITY,
+# which became positive in 3.15 and crashes the engine on Linux. Lift the cap once
+# https://github.com/semgrep/semgrep/issues/11979 is fixed in a released Semgrep.
+requires-python = ">=3.14,<3.15"
+# The correlator uses the Python standard library only.
+dependencies = []
+
+[project.scripts]
+pqc-correlate = "pqc_correlate.cli:main"
+
+[dependency-groups]
+# Pinned so CI matches the versions fixtures were generated with; Renovate bumps them.
+dev = [
+    "pytest==9.1.1",
+    "semgrep==1.180.0",
+]
+
+[tool.poetry]
+packages = [{ include = "pqc_correlate", from = "correlate" }]
+
+[tool.pytest.ini_options]
+testpaths = ["correlate/tests"]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
