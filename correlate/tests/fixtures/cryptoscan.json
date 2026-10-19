@@ -1,0 +1,696 @@
+{
+  "tool": {
+    "name": "CryptoScan",
+    "version": "1.4.0"
+  },
+  "findings": [
+    {
+      "id": "MD5-001-6-34",
+      "type": "MD5 Hash Function",
+      "findingType": "algorithm",
+      "category": "Broken Hash",
+      "algorithm": "MD5",
+      "primitive": "hash",
+      "migrationStatus": "CRITICAL",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "file": "app.js",
+      "line": 6,
+      "column": 35,
+      "match": "md5",
+      "context": "const digest = crypto.createHash(\"md5\").update(\"x\").digest(\"hex\");",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 3,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 4,
+            "content": "const { publicKey, privateKey } = crypto.generateKeyPairSync(\"rsa\", { modulusLength: 2048 });",
+            "isMatch": false
+          },
+          {
+            "number": 5,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 6,
+            "content": "const digest = crypto.createHash(\"md5\").update(\"x\").digest(\"hex\");",
+            "isMatch": true
+          },
+          {
+            "number": 7,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 8,
+            "content": "const token = jwt.sign({ sub: \"1\" }, privateKey, { algorithm: \"RS256\" });",
+            "isMatch": false
+          },
+          {
+            "number": 9,
+            "content": "",
+            "isMatch": false
+          }
+        ],
+        "startLine": 3,
+        "endLine": 9,
+        "matchLine": 6
+      },
+      "severity": 3,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "authentication",
+      "language": "javascript",
+      "fileType": "test",
+      "description": "MD5 detected. MD5 is cryptographically broken with practical collision attacks.",
+      "remediation": "Replace with SHA-256 or SHA-3 for integrity, or use HMAC for authentication.",
+      "impact": "Long-term data confidentiality at risk from quantum computing advances",
+      "effort": "Assessment needed",
+      "tags": [
+        "broken",
+        "collision-vulnerable",
+        "critical"
+      ]
+    },
+    {
+      "id": "RSA-001-4-62",
+      "type": "RSA Algorithm",
+      "findingType": "algorithm",
+      "category": "Asymmetric Encryption",
+      "algorithm": "RSA",
+      "primitive": "pke",
+      "migrationStatus": "VULNERABLE",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "oid": "1.2.840.113549.1.1.1",
+      "file": "app.js",
+      "line": 4,
+      "column": 63,
+      "match": "rsa",
+      "context": "const { publicKey, privateKey } = crypto.generateKeyPairSync(\"rsa\", { modulusLength: 2048 });",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "const crypto = require(\"crypto\");",
+            "isMatch": false
+          },
+          {
+            "number": 2,
+            "content": "const jwt = require(\"jsonwebtoken\");",
+            "isMatch": false
+          },
+          {
+            "number": 3,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 4,
+            "content": "const { publicKey, privateKey } = crypto.generateKeyPairSync(\"rsa\", { modulusLength: 2048 });",
+            "isMatch": true
+          },
+          {
+            "number": 5,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 6,
+            "content": "const digest = crypto.createHash(\"md5\").update(\"x\").digest(\"hex\");",
+            "isMatch": false
+          },
+          {
+            "number": 7,
+            "content": "",
+            "isMatch": false
+          }
+        ],
+        "startLine": 1,
+        "endLine": 7,
+        "matchLine": 4
+      },
+      "severity": 2,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "authentication",
+      "language": "javascript",
+      "fileType": "test",
+      "description": "RSA algorithm detected. RSA is vulnerable to Shor's algorithm and will be broken by cryptographically relevant quantum computers.",
+      "remediation": "Migrate to ML-KEM (FIPS 203) for key encapsulation or use hybrid RSA + ML-KEM during transition.",
+      "impact": "Algorithm requires migration before quantum computers become practical",
+      "effort": "Algorithm replacement - high effort, requires PKI changes",
+      "references": [
+        "https://csrc.nist.gov/pubs/fips/203/final",
+        "https://qramm.org/learn/pqc-migration-planning"
+      ],
+      "tags": [
+        "asymmetric",
+        "quantum-vulnerable",
+        "key-exchange"
+      ]
+    },
+    {
+      "id": "RSA-001-1-54",
+      "type": "RSA Algorithm",
+      "findingType": "algorithm",
+      "category": "Asymmetric Encryption",
+      "algorithm": "RSA",
+      "primitive": "pke",
+      "migrationStatus": "VULNERABLE",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "oid": "1.2.840.113549.1.1.1",
+      "file": "crypto_samples.py",
+      "line": 1,
+      "column": 55,
+      "match": "rsa",
+      "context": "from cryptography.hazmat.primitives.asymmetric import rsa, ec",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "from cryptography.hazmat.primitives.asymmetric import rsa, ec",
+            "isMatch": true
+          },
+          {
+            "number": 2,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 3,
+            "content": "private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)",
+            "isMatch": false
+          },
+          {
+            "number": 4,
+            "content": "",
+            "isMatch": false
+          }
+        ],
+        "startLine": 1,
+        "endLine": 4,
+        "matchLine": 1
+      },
+      "severity": 2,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "general",
+      "language": "python",
+      "fileType": "test",
+      "description": "RSA algorithm detected. RSA is vulnerable to Shor's algorithm and will be broken by cryptographically relevant quantum computers.",
+      "remediation": "Migrate to ML-KEM (FIPS 203) for key encapsulation or use hybrid RSA + ML-KEM during transition.",
+      "impact": "Algorithm requires migration before quantum computers become practical",
+      "effort": "Algorithm replacement - high effort, requires PKI changes",
+      "references": [
+        "https://csrc.nist.gov/pubs/fips/203/final",
+        "https://qramm.org/learn/pqc-migration-planning"
+      ],
+      "tags": [
+        "asymmetric",
+        "quantum-vulnerable",
+        "key-exchange"
+      ]
+    },
+    {
+      "id": "RSA-001-3-14",
+      "type": "RSA Algorithm",
+      "findingType": "algorithm",
+      "category": "Asymmetric Encryption",
+      "algorithm": "RSA",
+      "primitive": "pke",
+      "migrationStatus": "VULNERABLE",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "oid": "1.2.840.113549.1.1.1",
+      "file": "crypto_samples.py",
+      "line": 3,
+      "column": 15,
+      "match": "rsa",
+      "context": "private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "from cryptography.hazmat.primitives.asymmetric import rsa, ec",
+            "isMatch": false
+          },
+          {
+            "number": 2,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 3,
+            "content": "private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)",
+            "isMatch": true
+          },
+          {
+            "number": 4,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 5,
+            "content": "signing_key = ec.generate_private_key(ec.SECP256R1())",
+            "isMatch": false
+          }
+        ],
+        "startLine": 1,
+        "endLine": 5,
+        "matchLine": 3
+      },
+      "severity": 2,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "general",
+      "language": "python",
+      "fileType": "test",
+      "description": "RSA algorithm detected. RSA is vulnerable to Shor's algorithm and will be broken by cryptographically relevant quantum computers.",
+      "remediation": "Migrate to ML-KEM (FIPS 203) for key encapsulation or use hybrid RSA + ML-KEM during transition.",
+      "impact": "Algorithm requires migration before quantum computers become practical",
+      "effort": "Algorithm replacement - high effort, requires PKI changes",
+      "references": [
+        "https://csrc.nist.gov/pubs/fips/203/final",
+        "https://qramm.org/learn/pqc-migration-planning"
+      ],
+      "tags": [
+        "asymmetric",
+        "quantum-vulnerable",
+        "key-exchange"
+      ]
+    },
+    {
+      "id": "ECC-001-5-41",
+      "type": "Elliptic Curve Cryptography",
+      "findingType": "algorithm",
+      "category": "Asymmetric Encryption",
+      "algorithm": "ECC",
+      "primitive": "pke",
+      "migrationStatus": "VULNERABLE",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "file": "crypto_samples.py",
+      "line": 5,
+      "column": 42,
+      "match": "SECP256R1",
+      "context": "signing_key = ec.generate_private_key(ec.SECP256R1())",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 2,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 3,
+            "content": "private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)",
+            "isMatch": false
+          },
+          {
+            "number": 4,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 5,
+            "content": "signing_key = ec.generate_private_key(ec.SECP256R1())",
+            "isMatch": true
+          }
+        ],
+        "startLine": 2,
+        "endLine": 5,
+        "matchLine": 5
+      },
+      "severity": 2,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "signing",
+      "language": "python",
+      "fileType": "test",
+      "description": "Elliptic curve cryptography detected. ECC is vulnerable to Shor's algorithm on quantum computers.",
+      "remediation": "Migrate to ML-DSA (FIPS 204) for signatures or ML-KEM (FIPS 203) for key exchange.",
+      "impact": "Algorithm requires migration before quantum computers become practical",
+      "effort": "Algorithm replacement - high effort, requires PKI changes",
+      "references": [
+        "https://csrc.nist.gov/pubs/fips/204/final"
+      ],
+      "tags": [
+        "asymmetric",
+        "quantum-vulnerable",
+        "digital-signature"
+      ]
+    },
+    {
+      "id": "RSA-2048-4-70",
+      "type": "RSA-2048 Key Size",
+      "findingType": "algorithm",
+      "category": "Key Size",
+      "algorithm": "RSA",
+      "primitive": "pke",
+      "keySize": 2048,
+      "securityLevel": {
+        "classicalBits": 112
+      },
+      "migrationStatus": "VULNERABLE",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "oid": "1.2.840.113549.1.1.1",
+      "file": "app.js",
+      "line": 4,
+      "column": 71,
+      "match": "modulusLength: 2048",
+      "context": "const { publicKey, privateKey } = crypto.generateKeyPairSync(\"rsa\", { modulusLength: 2048 });",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "const crypto = require(\"crypto\");",
+            "isMatch": false
+          },
+          {
+            "number": 2,
+            "content": "const jwt = require(\"jsonwebtoken\");",
+            "isMatch": false
+          },
+          {
+            "number": 3,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 4,
+            "content": "const { publicKey, privateKey } = crypto.generateKeyPairSync(\"rsa\", { modulusLength: 2048 });",
+            "isMatch": true
+          },
+          {
+            "number": 5,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 6,
+            "content": "const digest = crypto.createHash(\"md5\").update(\"x\").digest(\"hex\");",
+            "isMatch": false
+          },
+          {
+            "number": 7,
+            "content": "",
+            "isMatch": false
+          }
+        ],
+        "startLine": 1,
+        "endLine": 7,
+        "matchLine": 4
+      },
+      "severity": 1,
+      "quantumRisk": "VULNERABLE",
+      "confidence": "MEDIUM",
+      "purpose": "authentication",
+      "language": "javascript",
+      "fileType": "test",
+      "description": "RSA-2048 provides 112-bit classical security but is vulnerable to quantum attacks.",
+      "remediation": "Plan migration to ML-KEM (FIPS 203). RSA-2048 is acceptable until 2030 for non-sensitive data.",
+      "impact": "Algorithm requires migration before quantum computers become practical",
+      "effort": "Assessment needed",
+      "tags": [
+        "quantum-vulnerable",
+        "transition-needed"
+      ]
+    },
+    {
+      "id": "SYM-AESGCM-001-10-38",
+      "type": "AES-GCM Authenticated Encryption",
+      "findingType": "algorithm",
+      "category": "Symmetric Encryption",
+      "algorithm": "AES-GCM",
+      "primitive": "aead",
+      "migrationStatus": "PARTIAL",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Quantum vulnerability assessment and classification"
+      },
+      "file": "app.js",
+      "line": 10,
+      "column": 39,
+      "match": "aes-256-gcm",
+      "context": "const cipher = crypto.createCipheriv(\"aes-256-gcm\", key, iv);",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 7,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 8,
+            "content": "const token = jwt.sign({ sub: \"1\" }, privateKey, { algorithm: \"RS256\" });",
+            "isMatch": false
+          },
+          {
+            "number": 9,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 10,
+            "content": "const cipher = crypto.createCipheriv(\"aes-256-gcm\", key, iv);",
+            "isMatch": true
+          }
+        ],
+        "startLine": 7,
+        "endLine": 10,
+        "matchLine": 10
+      },
+      "severity": 0,
+      "quantumRisk": "PARTIAL",
+      "confidence": "MEDIUM",
+      "purpose": "authentication",
+      "language": "javascript",
+      "fileType": "test",
+      "description": "AES-GCM AEAD detected (SP 800-38D). NIST-approved authenticated encryption.",
+      "remediation": "AES-256-GCM is recommended. Provides confidentiality and integrity.",
+      "impact": "Reduced security margin against quantum attacks; acceptable with increased key sizes",
+      "effort": "Algorithm replacement - medium effort",
+      "references": [
+        "https://csrc.nist.gov/pubs/sp/800/38/d/final"
+      ],
+      "tags": [
+        "symmetric",
+        "aead",
+        "aes",
+        "gcm",
+        "nist-approved"
+      ]
+    },
+    {
+      "id": "KEYSIZE-001-3-62",
+      "type": "Hardcoded Key Size",
+      "findingType": "config",
+      "category": "Configuration",
+      "migrationStatus": "PARTIAL",
+      "qrammMapping": {
+        "dimension": "CVI",
+        "practice": "1.2",
+        "evidence": "Cryptographic configuration assessment"
+      },
+      "file": "crypto_samples.py",
+      "line": 3,
+      "column": 63,
+      "match": "key_size=2048",
+      "context": "private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)",
+      "sourceContext": {
+        "lines": [
+          {
+            "number": 1,
+            "content": "from cryptography.hazmat.primitives.asymmetric import rsa, ec",
+            "isMatch": false
+          },
+          {
+            "number": 2,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 3,
+            "content": "private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)",
+            "isMatch": true
+          },
+          {
+            "number": 4,
+            "content": "",
+            "isMatch": false
+          },
+          {
+            "number": 5,
+            "content": "signing_key = ec.generate_private_key(ec.SECP256R1())",
+            "isMatch": false
+          }
+        ],
+        "startLine": 1,
+        "endLine": 5,
+        "matchLine": 3
+      },
+      "severity": 0,
+      "quantumRisk": "UNKNOWN",
+      "confidence": "MEDIUM",
+      "purpose": "general",
+      "language": "python",
+      "fileType": "test",
+      "description": "Hardcoded key size detected. Review to ensure adequate security level.",
+      "remediation": "Ensure key sizes meet current requirements. Use configuration for flexibility.",
+      "impact": "Standard cryptographic maintenance recommended",
+      "effort": "Configuration change - low effort",
+      "tags": [
+        "configuration",
+        "key-size"
+      ]
+    }
+  ],
+  "summary": {
+    "totalFindings": 8,
+    "bySeverity": {
+      "HIGH": 1,
+      "INFO": 2,
+      "LOW": 1,
+      "MEDIUM": 4
+    },
+    "byCategory": {
+      "Asymmetric Encryption": 4,
+      "Broken Hash": 1,
+      "Configuration": 1,
+      "Key Size": 1,
+      "Symmetric Encryption": 1
+    },
+    "byQuantumRisk": {
+      "PARTIAL": 1,
+      "UNKNOWN": 1,
+      "VULNERABLE": 6
+    },
+    "byConfidence": {
+      "MEDIUM": 8
+    },
+    "byFileType": {
+      "test": 8
+    },
+    "byLanguage": {
+      "javascript": 4,
+      "python": 4
+    },
+    "quantumVulnerableCount": 6,
+    "highConfidenceCount": 0,
+    "actionableCount": 0,
+    "narrativeSuppressedCount": 0
+  },
+  "migrationScore": {
+    "score": 7.5,
+    "level": "CRITICAL",
+    "safeCount": 0,
+    "hybridCount": 0,
+    "partialCount": 2,
+    "vulnerableCount": 5,
+    "criticalCount": 1,
+    "totalCount": 8,
+    "byPrimitive": {
+      "aead": 1,
+      "hash": 1,
+      "pke": 5
+    },
+    "byAlgorithm": {
+      "AES-GCM": 1,
+      "ECC": 1,
+      "MD5": 1,
+      "RSA": 4
+    },
+    "topRiskFiles": [
+      {
+        "file": "app.js",
+        "vulnerableCount": 2,
+        "criticalCount": 1,
+        "totalFindings": 4,
+        "riskScore": 45
+      },
+      {
+        "file": "crypto_samples.py",
+        "vulnerableCount": 3,
+        "criticalCount": 0,
+        "totalFindings": 4,
+        "riskScore": 30
+      }
+    ],
+    "qrammReadiness": {
+      "cviScore": 60,
+      "discoveryLevel": 3,
+      "assessmentLevel": 3,
+      "mappingLevel": 3,
+      "recommendations": [
+        "CRITICAL: Remove broken algorithms (MD5, SHA-1, DES, RC4) immediately.",
+        "Plan migration from quantum-vulnerable algorithms to PQC (ML-KEM, ML-DSA).",
+        "Consider hybrid cryptography as a transition strategy.",
+        "No quantum-safe algorithms detected. Begin PQC adoption planning."
+      ]
+    }
+  },
+  "insights": [
+    {
+      "type": "migration_required",
+      "title": "RSA Migration Required (4 instances)",
+      "description": "RSA is quantum-vulnerable and will be broken by Shor's algorithm. All RSA usage must migrate to ML-KEM (FIPS 203) for key encapsulation.",
+      "priority": "high",
+      "effort": "medium",
+      "findingIds": [
+        "RSA-001-4-62",
+        "RSA-001-1-54",
+        "RSA-001-3-14",
+        "RSA-2048-4-70"
+      ],
+      "action": "1. Inventory all RSA usage\n2. Implement hybrid RSA+ML-KEM during transition\n3. Complete migration to pure ML-KEM by 2030"
+    },
+    {
+      "type": "migration_required",
+      "title": "ECC/ECDSA Migration Required (1 instances)",
+      "description": "Elliptic curve cryptography is quantum-vulnerable. Signatures must migrate to ML-DSA (FIPS 204) or SLH-DSA (FIPS 205).",
+      "priority": "high",
+      "effort": "medium",
+      "findingIds": [
+        "ECC-001-5-41"
+      ],
+      "action": "1. Identify ECC usage (signatures vs key exchange)\n2. For signatures: migrate to ML-DSA\n3. For key exchange: migrate to ML-KEM"
+    }
+  ],
+  "scanTarget": ".",
+  "scanTime": "2026-10-12T13:21:47.14478322Z",
+  "scanDuration": 37715417,
+  "filesScanned": 2,
+  "linesScanned": 15,
+  "bytesScanned": 567,
+  "languageStats": {
+    "javascript": 1,
+    "python": 1
+  }
+}

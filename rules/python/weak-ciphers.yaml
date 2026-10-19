@@ -1,0 +1,54 @@
+rules:
+  - id: pqc.python.des
+    languages: [python]
+    severity: ERROR
+    message: |
+      DES detected. DES has a 56-bit key brute-forceable in seconds with
+      commodity hardware and is unsafe for any security purpose.
+      Migrate to AES-256-GCM.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: DES
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "AES-256-GCM"
+    pattern-either:
+      - pattern: DES.new(...)
+
+  - id: pqc.python.3des
+    languages: [python]
+    severity: WARNING
+    message: |
+      Triple DES (3DES / DESede) detected. 3DES is vulnerable to Sweet32
+      birthday attacks and is deprecated by NIST SP 800-131A.
+      Migrate to AES-256-GCM.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: 3DES
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "AES-256-GCM"
+    pattern-either:
+      - pattern: DES3.new(...)
+
+  - id: pqc.python.rc4
+    languages: [python]
+    severity: ERROR
+    message: |
+      RC4 detected. RC4 has biases in its keystream that make it broken;
+      prohibited in TLS by RFC 7465.
+      Migrate to AES-256-GCM or ChaCha20-Poly1305.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: RC4
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "AES-256-GCM or ChaCha20-Poly1305"
+    pattern-either:
+      - pattern: ARC4.new(...)

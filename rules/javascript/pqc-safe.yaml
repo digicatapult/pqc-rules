@@ -1,0 +1,61 @@
+rules:
+  - id: pqc.javascript.ml-kem
+    languages: [javascript, typescript]
+    severity: INFO
+    message: ML-KEM (FIPS 203) key encapsulation detected. Quantum-resistant.
+    metadata:
+      category: security
+      pqc-category: pqc-safe
+      pqc-family: ML-KEM
+      pqc-risk: safe
+      nist-pqc-replacement: "n/a"
+    # Node's crypto.encapsulate()/decapsulate() are not matched: they use whichever
+    # KEM the key's type implies (RSA, EC, X25519/X448 or ML-KEM). The ML-KEM key
+    # itself is matched where it is generated.
+    pattern-either:
+      - patterns:
+          - pattern-either:
+              - pattern: $M.keygen(...)
+              - pattern: $M.encapsulate(...)
+              - pattern: $M.decapsulate(...)
+          - metavariable-regex:
+              metavariable: $M
+              regex: ^ml_kem(512|768|1024)$
+      - patterns:
+          - pattern-either:
+              - pattern: $C.generateKeyPair($ALG, ...)
+              - pattern: generateKeyPair($ALG, ...)
+              - pattern: $C.generateKeyPairSync($ALG, ...)
+              - pattern: generateKeyPairSync($ALG, ...)
+          - metavariable-regex:
+              metavariable: $ALG
+              regex: (?i)^['"`]ml-kem-(512|768|1024)['"`]$
+
+  - id: pqc.javascript.ml-dsa
+    languages: [javascript, typescript]
+    severity: INFO
+    message: ML-DSA / SLH-DSA (FIPS 204 / 205) signature detected. Quantum-resistant.
+    metadata:
+      category: security
+      pqc-category: pqc-safe
+      pqc-family: ML-DSA
+      pqc-risk: safe
+      nist-pqc-replacement: "n/a"
+    pattern-either:
+      - patterns:
+          - pattern-either:
+              - pattern: $M.keygen(...)
+              - pattern: $M.sign(...)
+              - pattern: $M.verify(...)
+          - metavariable-regex:
+              metavariable: $M
+              regex: ^(ml_dsa(44|65|87)|slh_dsa_\w+)$
+      - patterns:
+          - pattern-either:
+              - pattern: $C.generateKeyPair($ALG, ...)
+              - pattern: generateKeyPair($ALG, ...)
+              - pattern: $C.generateKeyPairSync($ALG, ...)
+              - pattern: generateKeyPairSync($ALG, ...)
+          - metavariable-regex:
+              metavariable: $ALG
+              regex: (?i)^['"`](ml-dsa-(44|65|87)|slh-dsa-[\w-]+)['"`]$

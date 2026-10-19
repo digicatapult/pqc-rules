@@ -1,0 +1,48 @@
+rules:
+  - id: pqc.javascript.webcrypto-rsa
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: |
+      WebCrypto RSA key (RSA-OAEP / RSASSA-PKCS1-v1_5 / RSA-PSS). Broken by
+      Shor's algorithm on a CRQC. Migrate to ML-KEM (FIPS 203) for encryption
+      or ML-DSA (FIPS 204) for signatures.
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: RSA
+      pqc-risk: vulnerable
+      nist-pqc-replacement: "ML-KEM (FIPS 203) or ML-DSA (FIPS 204)"
+    patterns:
+      - pattern-either:
+          - pattern: '$C.subtle.generateKey({..., name: $N, ...}, ...)'
+          - pattern: '$C.subtle.importKey($F, $D, {..., name: $N, ...}, ...)'
+          - pattern: 'subtle.generateKey({..., name: $N, ...}, ...)'
+          - pattern: 'subtle.importKey($F, $D, {..., name: $N, ...}, ...)'
+      - metavariable-regex:
+          metavariable: $N
+          regex: ^['"](RSA-OAEP|RSASSA-PKCS1-v1_5|RSA-PSS)['"]$
+
+  - id: pqc.javascript.webcrypto-ecc
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: |
+      WebCrypto elliptic-curve key (ECDSA / ECDH / Ed25519 / X25519). Broken
+      by Shor's algorithm on a CRQC. Migrate key agreement to ML-KEM
+      (FIPS 203) or hybrid X25519MLKEM768; signatures to ML-DSA (FIPS 204).
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: ECC
+      pqc-risk: vulnerable
+      nist-pqc-replacement: "ML-KEM (FIPS 203) or ML-DSA (FIPS 204)"
+    patterns:
+      - pattern-either:
+          - pattern: '$C.subtle.generateKey({..., name: $N, ...}, ...)'
+          - pattern: '$C.subtle.importKey($F, $D, {..., name: $N, ...}, ...)'
+          - pattern: 'subtle.generateKey({..., name: $N, ...}, ...)'
+          - pattern: 'subtle.importKey($F, $D, {..., name: $N, ...}, ...)'
+          - pattern: $C.subtle.generateKey($N, ...)
+          - pattern: subtle.generateKey($N, ...)
+      - metavariable-regex:
+          metavariable: $N
+          regex: ^['"](ECDSA|ECDH|Ed25519|X25519)['"]$

@@ -1,0 +1,38 @@
+rules:
+  - id: pqc.java.md5
+    languages: [java]
+    severity: ERROR
+    message: |
+      MD5 detected (Java JCA). Collisions trivially producible; unsafe.
+      Migrate to SHA-256 / SHA-3-256.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: MD5
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "SHA-256 / SHA-3-256"
+    pattern-either:
+      - pattern: MessageDigest.getInstance("MD5")
+      - pattern: MessageDigest.getInstance("MD5", ...)
+
+  - id: pqc.java.sha1
+    languages: [java]
+    severity: WARNING
+    message: |
+      SHA-1 detected (Java JCA). Practical collisions (SHAttered 2017).
+      Migrate to SHA-256 / SHA-3-256.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: SHA-1
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "SHA-256 / SHA-3-256"
+    pattern-either:
+      - pattern: MessageDigest.getInstance("SHA-1")
+      - pattern: MessageDigest.getInstance("SHA-1", ...)
+      - pattern: MessageDigest.getInstance("SHA1")
+      - pattern: MessageDigest.getInstance("SHA1", ...)

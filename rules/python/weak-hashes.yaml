@@ -1,0 +1,49 @@
+rules:
+  - id: pqc.python.md5
+    languages: [python]
+    severity: ERROR
+    message: |
+      MD5 detected. MD5 is broken by classical cryptanalysis (collisions
+      trivially producible) and is unsafe for any security purpose.
+      Migrate to SHA-256 / SHA-3-256 (or SHA-384+ for long-term assurance).
+      Note: if used as a non-cryptographic content hash (cache keys, ETags,
+      content addressing), changing to SHA-256 will alter output bytes —
+      coordinate with downstream consumers.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: MD5
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "SHA-256 / SHA-3-256 (or SHA-384+ for long-term assurance)"
+    pattern-either:
+      - pattern: hashlib.md5(...)
+      - pattern: hashlib.new("md5", ...)
+      - pattern: hashlib.new("MD5", ...)
+      - pattern: MD5.new(...)
+
+  - id: pqc.python.sha1
+    languages: [python]
+    severity: WARNING
+    message: |
+      SHA-1 detected. SHA-1 is broken by classical cryptanalysis (practical
+      collisions demonstrated, SHAttered 2017) and is deprecated by NIST.
+      Migrate to SHA-256 / SHA-3-256 (or SHA-384+ for long-term assurance).
+      Note: bare SHA-1 used for non-cryptographic content addressing (git
+      object IDs, dedup) is safe today but a SHA-256 migration changes
+      output bytes — coordinate with downstream consumers.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: SHA-1
+      pqc-risk: broken
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      nist-pqc-replacement: "SHA-256 / SHA-3-256 (or SHA-384+ for long-term assurance)"
+    pattern-either:
+      - pattern: hashlib.sha1(...)
+      - pattern: hashlib.new("sha1", ...)
+      - pattern: hashlib.new("SHA1", ...)
+      - pattern: hashlib.new("SHA-1", ...)
+      - pattern: SHA1.new(...)

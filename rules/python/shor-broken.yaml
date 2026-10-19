@@ -1,0 +1,136 @@
+rules:
+  - id: pqc.python.rsa
+    languages: [python]
+    severity: ERROR
+    message: |
+      RSA detected. RSA is broken by Shor's algorithm on a sufficiently
+      large fault-tolerant quantum computer (CRQC) and is subject to
+      harvest-now-decrypt-later attacks. Migrate to ML-KEM (FIPS 203)
+      for key encapsulation or ML-DSA (FIPS 204) for signatures.
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: RSA
+      pqc-risk: vulnerable
+      cwe:
+        - "CWE-326: Inadequate Encryption Strength"
+      nist-pqc-replacement: "ML-KEM (FIPS 203) for KEM; ML-DSA (FIPS 204) for signatures"
+      references:
+        - https://csrc.nist.gov/pubs/fips/203/final
+        - https://csrc.nist.gov/pubs/fips/204/final
+    pattern-either:
+      - pattern: rsa.generate_private_key(...)
+      - pattern: RSA.generate(...)
+      - pattern: RSA.new(...)
+      - pattern: RSA.import_key(...)
+      - pattern: RSA.construct(...)
+
+  - id: pqc.python.ec
+    languages: [python]
+    severity: ERROR
+    message: |
+      Elliptic-curve key detected (ECDSA / ECDH). EC discrete-log is
+      broken by Shor's algorithm on a sufficiently large fault-tolerant
+      quantum computer (CRQC) and is subject to harvest-now-decrypt-later
+      attacks. Migrate signature uses to ML-DSA (FIPS 204) or SLH-DSA
+      (FIPS 205); migrate key-agreement uses to ML-KEM (FIPS 203) or
+      hybrid X25519 + ML-KEM.
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: ECC
+      pqc-risk: vulnerable
+      cwe:
+        - "CWE-326: Inadequate Encryption Strength"
+      nist-pqc-replacement: "ML-DSA (FIPS 204), SLH-DSA (FIPS 205), or ML-KEM (FIPS 203)"
+      references:
+        - https://csrc.nist.gov/pubs/fips/204/final
+        - https://csrc.nist.gov/pubs/fips/205/final
+    pattern-either:
+      - pattern: ec.generate_private_key(...)
+      - pattern: ECC.generate(...)
+      - pattern: ECC.import_key(...)
+      - pattern: ECC.construct(...)
+
+  - id: pqc.python.dsa
+    languages: [python]
+    severity: ERROR
+    message: |
+      DSA detected. DSA is broken by Shor's algorithm on a sufficiently
+      large fault-tolerant quantum computer (CRQC); also deprecated by
+      NIST SP 800-186. Migrate to ML-DSA (FIPS 204).
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: DSA
+      pqc-risk: vulnerable
+      cwe:
+        - "CWE-326: Inadequate Encryption Strength"
+      nist-pqc-replacement: "ML-DSA (FIPS 204)"
+      references:
+        - https://csrc.nist.gov/pubs/fips/204/final
+    pattern-either:
+      - pattern: dsa.generate_private_key(...)
+      - pattern: DSA.generate(...)
+      - pattern: DSA.import_key(...)
+
+  - id: pqc.python.dh
+    languages: [python]
+    severity: ERROR
+    message: |
+      Finite-field Diffie-Hellman detected. DH is broken by Shor's
+      algorithm on a sufficiently large fault-tolerant quantum computer
+      (CRQC) and is subject to harvest-now-decrypt-later attacks.
+      Migrate to ML-KEM (FIPS 203).
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: DH
+      pqc-risk: vulnerable
+      cwe:
+        - "CWE-326: Inadequate Encryption Strength"
+      nist-pqc-replacement: "ML-KEM (FIPS 203)"
+      references:
+        - https://csrc.nist.gov/pubs/fips/203/final
+    pattern-either:
+      - pattern: dh.generate_parameters(...)
+
+  - id: pqc.python.x25519
+    languages: [python]
+    severity: ERROR
+    message: |
+      X25519 detected. Curve25519 ECDH is broken by Shor's algorithm
+      identically to other ECDH variants and is subject to
+      harvest-now-decrypt-later attacks. Hybrid X25519 + ML-KEM (retaining
+      X25519 as the classical half for defense-in-depth) is the recommended
+      near-term migration; pure ML-KEM (FIPS 203) is the long-term path.
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: ECC
+      pqc-risk: vulnerable
+      cwe:
+        - "CWE-326: Inadequate Encryption Strength"
+      nist-pqc-replacement: "Hybrid X25519 + ML-KEM (FIPS 203)"
+    pattern-either:
+      - pattern: X25519PrivateKey.generate(...)
+      - pattern: x25519.X25519PrivateKey.generate(...)
+
+  - id: pqc.python.ed25519
+    languages: [python]
+    severity: ERROR
+    message: |
+      Ed25519 detected. EdDSA over Curve25519 is broken by Shor's
+      algorithm identically to ECDSA. Migrate to ML-DSA (FIPS 204) or
+      a hybrid Ed25519 + ML-DSA construction.
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: ECC
+      pqc-risk: vulnerable
+      cwe:
+        - "CWE-326: Inadequate Encryption Strength"
+      nist-pqc-replacement: "ML-DSA (FIPS 204) or hybrid Ed25519 + ML-DSA"
+    pattern-either:
+      - pattern: Ed25519PrivateKey.generate(...)
+      - pattern: ed25519.Ed25519PrivateKey.generate(...)

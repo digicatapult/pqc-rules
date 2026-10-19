@@ -1,0 +1,45 @@
+rules:
+  - id: pqc.javascript.forge-rsa
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: |
+      node-forge RSA key generation or encryption. Broken by Shor's algorithm
+      on a CRQC. Migrate to ML-KEM (FIPS 203) or ML-DSA (FIPS 204).
+    metadata:
+      category: security
+      pqc-category: shor-broken
+      pqc-family: RSA
+      pqc-risk: vulnerable
+      nist-pqc-replacement: "ML-KEM (FIPS 203) or ML-DSA (FIPS 204)"
+    pattern-either:
+      - pattern: $F.pki.rsa.generateKeyPair(...)
+      - pattern: $F.pki.rsa.setPublicKey(...)
+      - pattern: $F.pki.privateKeyFromPem(...)
+
+  - id: pqc.javascript.forge-md5
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: |
+      node-forge MD5. Collision-broken; unsafe for any security purpose.
+      Migrate to SHA-384 or SHA-512.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: MD5
+      pqc-risk: broken
+      nist-pqc-replacement: "SHA-384 / SHA-512"
+    pattern: $F.md.md5.create()
+
+  - id: pqc.javascript.forge-sha1
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: |
+      node-forge SHA-1. Collision-broken (SHAttered). Migrate to SHA-384 or
+      SHA-512.
+    metadata:
+      category: security
+      pqc-category: classically-broken
+      pqc-family: SHA-1
+      pqc-risk: broken
+      nist-pqc-replacement: "SHA-384 / SHA-512"
+    pattern: $F.md.sha1.create()

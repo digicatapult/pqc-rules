@@ -1,0 +1,175 @@
+{
+  "version": "1.180.0",
+  "results": [
+    {
+      "check_id": "w.pqc-rules.rules.javascript.pqc.javascript.rsa",
+      "path": "app.js",
+      "start": {
+        "line": 4,
+        "col": 35,
+        "offset": 106
+      },
+      "end": {
+        "line": 4,
+        "col": 93,
+        "offset": 164
+      },
+      "extra": {
+        "message": "RSA detected. Broken by Shor's algorithm on a sufficiently large\nfault-tolerant quantum computer (CRQC) and subject to harvest-now-\ndecrypt-later attacks. Migrate to ML-KEM (FIPS 203) for KEM or\nML-DSA (FIPS 204) for signatures.\n",
+        "metadata": {
+          "category": "security",
+          "pqc-category": "shor-broken",
+          "pqc-family": "RSA",
+          "pqc-risk": "vulnerable",
+          "cwe": [
+            "CWE-326: Inadequate Encryption Strength"
+          ],
+          "nist-pqc-replacement": "ML-KEM (FIPS 203) or ML-DSA (FIPS 204)"
+        },
+        "severity": "ERROR",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "w.pqc-rules.rules.javascript.pqc.javascript.md5",
+      "path": "app.js",
+      "start": {
+        "line": 6,
+        "col": 16,
+        "offset": 182
+      },
+      "end": {
+        "line": 6,
+        "col": 40,
+        "offset": 206
+      },
+      "extra": {
+        "message": "MD5 detected. Collisions trivially producible; unsafe for any\nsecurity purpose. Migrate to SHA-256 / SHA-3-256.\n",
+        "metadata": {
+          "category": "security",
+          "pqc-category": "classically-broken",
+          "pqc-family": "MD5",
+          "pqc-risk": "broken",
+          "cwe": [
+            "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+          ],
+          "nist-pqc-replacement": "SHA-256 / SHA-3-256"
+        },
+        "severity": "ERROR",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "w.pqc-rules.rules.javascript.pqc.javascript.jwt-rsa",
+      "path": "app.js",
+      "start": {
+        "line": 8,
+        "col": 15,
+        "offset": 249
+      },
+      "end": {
+        "line": 8,
+        "col": 73,
+        "offset": 307
+      },
+      "extra": {
+        "message": "JWT signed or verified with an RSA algorithm (RS*/PS*). RSA signatures\nare broken by Shor's algorithm on a CRQC. Short-lived tokens carry less\nrisk than long-lived ones; plan migration to ML-DSA (FIPS 204) once\nPQ JOSE algorithms are standardised.\n",
+        "metadata": {
+          "category": "security",
+          "pqc-category": "shor-broken",
+          "pqc-family": "RSA",
+          "pqc-risk": "vulnerable",
+          "nist-pqc-replacement": "ML-DSA (FIPS 204)"
+        },
+        "severity": "WARNING",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "w.pqc-rules.rules.python.pqc.python.rsa",
+      "path": "crypto_samples.py",
+      "start": {
+        "line": 3,
+        "col": 15,
+        "offset": 77
+      },
+      "end": {
+        "line": 3,
+        "col": 77,
+        "offset": 139
+      },
+      "extra": {
+        "message": "RSA detected. RSA is broken by Shor's algorithm on a sufficiently\nlarge fault-tolerant quantum computer (CRQC) and is subject to\nharvest-now-decrypt-later attacks. Migrate to ML-KEM (FIPS 203)\nfor key encapsulation or ML-DSA (FIPS 204) for signatures.\n",
+        "metadata": {
+          "category": "security",
+          "pqc-category": "shor-broken",
+          "pqc-family": "RSA",
+          "pqc-risk": "vulnerable",
+          "cwe": [
+            "CWE-326: Inadequate Encryption Strength"
+          ],
+          "nist-pqc-replacement": "ML-KEM (FIPS 203) for KEM; ML-DSA (FIPS 204) for signatures",
+          "references": [
+            "https://csrc.nist.gov/pubs/fips/203/final",
+            "https://csrc.nist.gov/pubs/fips/204/final"
+          ]
+        },
+        "severity": "ERROR",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    },
+    {
+      "check_id": "w.pqc-rules.rules.python.pqc.python.ec",
+      "path": "crypto_samples.py",
+      "start": {
+        "line": 5,
+        "col": 15,
+        "offset": 155
+      },
+      "end": {
+        "line": 5,
+        "col": 54,
+        "offset": 194
+      },
+      "extra": {
+        "message": "Elliptic-curve key detected (ECDSA / ECDH). EC discrete-log is\nbroken by Shor's algorithm on a sufficiently large fault-tolerant\nquantum computer (CRQC) and is subject to harvest-now-decrypt-later\nattacks. Migrate signature uses to ML-DSA (FIPS 204) or SLH-DSA\n(FIPS 205); migrate key-agreement uses to ML-KEM (FIPS 203) or\nhybrid X25519 + ML-KEM.\n",
+        "metadata": {
+          "category": "security",
+          "pqc-category": "shor-broken",
+          "pqc-family": "ECC",
+          "pqc-risk": "vulnerable",
+          "cwe": [
+            "CWE-326: Inadequate Encryption Strength"
+          ],
+          "nist-pqc-replacement": "ML-DSA (FIPS 204), SLH-DSA (FIPS 205), or ML-KEM (FIPS 203)",
+          "references": [
+            "https://csrc.nist.gov/pubs/fips/204/final",
+            "https://csrc.nist.gov/pubs/fips/205/final"
+          ]
+        },
+        "severity": "ERROR",
+        "fingerprint": "requires login",
+        "lines": "requires login",
+        "validation_state": "NO_VALIDATOR",
+        "engine_kind": "OSS"
+      }
+    }
+  ],
+  "errors": [],
+  "paths": {},
+  "engine_requested": "OSS",
+  "skipped_rules": [],
+  "profiling_results": []
+}
