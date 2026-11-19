@@ -8,24 +8,32 @@ on:
 permissions:
   contents: read
 
+env:
+  # renovate: datasource=pypi depName=poetry
+  POETRY_VERSION: "2.5.1"
+
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
+      # Poetry must be on PATH before setup-python so its cache can be resolved.
+      - name: Install Poetry
+        run: pipx install "poetry==${POETRY_VERSION}"
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.14"
-      - name: Install test tooling
-        run: pip install -r requirements-dev.txt
+          python-version-file: ".python-version"
+          cache: poetry
+      - name: Install project and test tooling
+        run: |
+          poetry env use "$(command -v python)"
+          poetry install --with dev
       - name: Validate Semgrep rule schema
-        run: semgrep --validate --metrics=off --config rules/
+        run: poetry run semgrep --validate --metrics=off --config rules/
       - name: Run Semgrep rule tests
-        run: semgrep scan --test --metrics=off --config rules/ rules/
+        run: poetry run semgrep scan --test --metrics=off --config rules/ rules/
       - name: Verify TypeScript fixtures
-        run: python scripts/test_typescript_fixtures.py
+        run: poetry run python scripts/test_typescript_fixtures.py
       - name: Run correlator and rule metadata tests
-        env:
-          PYTHONPATH: correlate
-        run: python -m pytest -q correlate/tests
+        run: poetry run pytest -q

@@ -34,7 +34,7 @@ Coverage beyond the upstream fork:
 ## Correlator
 
 ```sh
-PYTHONPATH=correlate python -m pqc_correlate \
+poetry run pqc-correlate \
   --root . --out pqc-out \
   --semgrep semgrep.json --cryptoscan cryptoscan.json \
   [--window 3] [--allowlist-extra 'semgrep:pqc.javascript.jwt-*'] \
@@ -84,14 +84,14 @@ Exit codes: `0` success (findings never fail the run); `2` missing, unreadable o
 
 ## Development
 
+Requires Python 3.14 (see `.python-version`) and [Poetry](https://python-poetry.org/) 2.x. Python 3.15 is not supported yet because Semgrep crashes on it under Linux ([semgrep/semgrep#11979](https://github.com/semgrep/semgrep/issues/11979)).
+
 ```sh
-python3 -m venv .venv || python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements-dev.txt
-semgrep --validate --metrics=off --config rules/
-semgrep scan --test --metrics=off --config rules/ rules/
-python3 scripts/test_typescript_fixtures.py
-PYTHONPATH=correlate python -m pytest -q correlate/tests
+poetry install --with dev
+poetry run semgrep --validate --metrics=off --config rules/
+poetry run semgrep scan --test --metrics=off --config rules/ rules/
+poetry run python scripts/test_typescript_fixtures.py
+poetry run pytest -q
 ```
 
 ## Licence
