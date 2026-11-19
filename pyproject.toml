@@ -17,8 +17,8 @@ pqc-correlate = "pqc_correlate.cli:main"
 [dependency-groups]
 # Pinned so CI matches the versions fixtures were generated with; Renovate bumps them.
 dev = [
-    "pytest==9.1.1",
-    "semgrep==1.180.0",
+    "pytest==9.2.0",
+    "semgrep==1.185.0",
 ]
 
 [tool.poetry]
