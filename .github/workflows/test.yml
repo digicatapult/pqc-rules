@@ -10,7 +10,7 @@ permissions:
 
 env:
   # renovate: datasource=pypi depName=poetry
-  POETRY_VERSION: "2.5.1"
+  POETRY_VERSION: "2.5.2"
 
 jobs:
   test:
